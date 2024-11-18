@@ -22,6 +22,10 @@ public class Client {
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            while (true){
+                String temp = br.readLine();
+                System.out.println(temp);
+            }
         }
         catch (IOException e) {
             throw new RuntimeException(e);
