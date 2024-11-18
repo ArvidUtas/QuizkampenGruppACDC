@@ -16,8 +16,9 @@ public class Player {
     public Player(Socket socket, char playerNum) {
         this.socket = socket;
         this.playerNum = playerNum;
-        try (PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))){
+        try {
+            out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -26,6 +27,17 @@ public class Player {
 
     public void sendToClient(String message){
         out.println(message);
+    }
+
+
+    public String receieveFromClient(){
+        String input = "";
+        try {
+            input = in.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return input;
     }
 
 

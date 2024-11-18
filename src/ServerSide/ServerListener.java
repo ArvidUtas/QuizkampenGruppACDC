@@ -16,8 +16,6 @@ public class ServerListener {
         } catch (IOException e) {
             System.err.println("Problem med in-ut strömmen.");
             e.printStackTrace();
-//        finally {
-//            listener.close(); //
         }
     }
 
