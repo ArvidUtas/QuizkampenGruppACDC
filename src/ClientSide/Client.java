@@ -1,3 +1,5 @@
+package ClientSide;
+
 public class Client {
     public Client() {
 
