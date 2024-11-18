@@ -28,6 +28,12 @@ public class Player {
     public void sendToClient(String message){
         out.println(message);
     }
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
+    }
+    public Player getOpponent() {
+        return opponent;
+    }
 
 
     public String receieveFromClient(){
