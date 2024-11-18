@@ -38,18 +38,21 @@ public class Category {
                     for (int i = 0; i < incorrectAnswersArray.size(); i++) {
                         String incorrectAnswer = incorrectAnswersArray.get(i).getAsString().
                                 replaceAll("&#039;", "'").
-                                replaceAll("&quot;", "\"");
+                                replaceAll("&quot;", "\"").
+                                replaceAll("&rsquo;", "’");
                         questAndAns.add((incorrectAnswer));
                     }
                     String correct_answer = questionObject.get("correct_answer").getAsString()
-                            .replaceAll("&#039;", "'").replaceAll("&quot;", "\"");
+                            .replaceAll("&#039;", "'").replaceAll("&quot;", "\"").
+                            replaceAll("&rsquo;", "’");
                     questAndAns.add(correct_answer); //Add correct answer as one of answer options
                     Collections.shuffle(questAndAns); //Shuffle answer options
 
                     questAndAns.addFirst(correct_answer); //Added at [1], position of correct answer
 
                     String question = questionObject.get("question").getAsString().
-                            replaceAll("&#039;", "'").replaceAll("&quot;", "\"");
+                            replaceAll("&#039;", "'").replaceAll("&quot;", "\"").
+                            replaceAll("&rsquo;", "’");
                     questAndAns.addFirst(question); //Added at [0], position of question
 
                     System.out.println(questAndAns.toString());
