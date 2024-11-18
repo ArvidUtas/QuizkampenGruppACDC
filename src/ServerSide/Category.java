@@ -11,10 +11,11 @@ import com.google.gson.*;
 
 public class Category {
 
-    public ArrayList<String> getQuestionsList(String category) {
+    public ArrayList<ArrayList<String>> getQuestionsList(String category) {
         //String url = "https://opentdb.com/api.php?amount=6&category=" + category + "&difficulty=easy&type=multiple";
         String url = "https://opentdb.com/api.php?amount=6&category=11&difficulty=easy&type=multiple";
-        ArrayList<String> questAndAns = new ArrayList<>();
+        ArrayList<ArrayList<String>> listOfLists = new ArrayList<>();
+
 
         // Create HttpClient and HttpRequest
         try (HttpClient client = HttpClient.newHttpClient()){
@@ -31,7 +32,7 @@ public class Category {
                         .getAsJsonObject().getAsJsonArray("results");
                 //Create question and answers list
                 for (JsonElement element : resultsArray) {
-
+                    ArrayList<String> questAndAns = new ArrayList<>();
                     JsonObject questionObject = element.getAsJsonObject();
                     //Get incorrect answers from array and add to list
                     JsonArray incorrectAnswersArray = questionObject.getAsJsonArray("incorrect_answers");
@@ -54,9 +55,11 @@ public class Category {
                             replaceAll("&#039;", "'").replaceAll("&quot;", "\"").
                             replaceAll("&rsquo;", "’");
                     questAndAns.addFirst(question); //Added at [0], position of question
+                    listOfLists.add(questAndAns);
 
-                    System.out.println(questAndAns.toString());
                 }
+
+                //System.out.println(listOfLists.toString());
 
             } else {
                 System.out.println("Fel: " + apiResponse.statusCode());
@@ -65,7 +68,7 @@ public class Category {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-    return questAndAns;
+        return listOfLists;
     }
 
 }
