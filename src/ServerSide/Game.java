@@ -33,43 +33,28 @@ public class Game extends Thread {
         for (int i = 0; i < numQuestion; i++) {
             sendQnAs(questions, currentQ);
             currentQ++;
-        }
-    }
 
-    public void sendQnAs(ArrayList<ArrayList<String>> questions, int currentQ){
-        sendToBothClients("Question" + questions.get(currentQ).getFirst());
-        sendToBothClients(questions.get(currentQ).get(2));
-        sendToBothClients(questions.get(currentQ).get(3));
-        sendToBothClients(questions.get(currentQ).get(4));
-        sendToBothClients(questions.get(currentQ).get(5));
+            if (questions.isEmpty()) {
+                throw new IllegalStateException("No questions found");
+            }
 
-
-
-        if (questions.isEmpty()) {
-            throw new IllegalStateException("No questions found");
-        }
+            for (int round = 1; round <= numRounds; round++) {
+                player1.sendToClient("Round " + round);
+                player2.sendToClient("Round " + round);
+                Question currentQuestion = null;
 
 
+                for (int q = 0; q < numRounds; q++) {
+                    sendToBothClients(currentQuestion.toString());
 
-        for (int round = 1; round <= numRounds; round++) {
-            player1.sendToClient("Round " + round);
-            player2.sendToClient("Round " + round);
-            Question currentQuestion = null;
+                    String player1Answer = player1.receieveFromClient();
+                    String player2Answer = player2.receieveFromClient();
 
-
-            for (int q = 0; q < numRounds; q++) {
-                sendToBothClients(currentQuestion.toString());
-
-                String player1Answer = player1.receieveFromClient();
-                String player2Answer = player2.receieveFromClient();
-
-                if (currentQuestion.isCorrect(player1Answer)) p1Score++;
-                if (currentQuestion.isCorrect(player2Answer)) p2Score++;
+                    if (currentQuestion.isCorrect(player1Answer)) p1Score++;
+                    if (currentQuestion.isCorrect(player2Answer)) p2Score++;
 
                 }
             }
-
-
 
             player1.sendToClient("Final Score: " + p1Score);
             player2.sendToClient("Final Score: " + p2Score);
@@ -84,6 +69,22 @@ public class Game extends Thread {
                 player1.sendToClient("Draw");
                 player2.sendToClient("Draw");
             }
+        }
+    }
+
+    public boolean checkAnswer(Player answer, ArrayList<ArrayList<String>> questions, int currentQ){
+        if(answer.equals(questions.get(currentQ).get(1))){
+            return true;
+        }
+        else return false;
+    }
+
+    public void sendQnAs(ArrayList<ArrayList<String>> questions, int currentQ){
+        sendToBothClients("Question" + questions.get(currentQ).getFirst());
+        sendToBothClients(questions.get(currentQ).get(2));
+        sendToBothClients(questions.get(currentQ).get(3));
+        sendToBothClients(questions.get(currentQ).get(4));
+        sendToBothClients(questions.get(currentQ).get(5));
         }
     }
 
