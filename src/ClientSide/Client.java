@@ -1,9 +1,6 @@
 package ClientSide;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class Client {
@@ -13,7 +10,7 @@ public class Client {
 
     public Client() {
 
-        String hostName = "127.0.0.1";
+        String hostName = "localhost";
         int portNumber = 23456;
 
         try(Socket socket = new Socket(hostName, portNumber)) {
@@ -22,15 +19,19 @@ public class Client {
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            while (true){
-                String temp = br.readLine();
-                System.out.println(temp);
+            String messsage;
+            while ((messsage = br.readLine()) != null) {
+                System.out.println(messsage);
+                if (messsage.startsWith("Question")) {
+                    System.out.print("Your answer: ");
+                    String answer = new BufferedReader(new InputStreamReader(System.in)).readLine();
+                    pw.println(answer);
+                }
             }
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static void main(String[] args) {
