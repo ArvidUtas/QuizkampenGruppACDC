@@ -12,7 +12,7 @@ public class Game extends Thread {
     private int p1Score = 0;
     private int p2Score = 0;
     private int numQuestion;
-    private int numRonds;
+    private int numRounds;
 
     Properties p = new Properties();
     public Game(Player player1, Player player2) {
@@ -26,7 +26,7 @@ public class Game extends Thread {
         this.player1.setOpponent(player2);
         this.player2.setOpponent(player1);
         numQuestion = Integer.parseInt(p.getProperty("numberOfQuestions"));
-        numRonds = Integer.parseInt(p.getProperty("numberOfRounds"));
+        numRounds = Integer.parseInt(p.getProperty("numberOfRounds"));
 
     }
 
