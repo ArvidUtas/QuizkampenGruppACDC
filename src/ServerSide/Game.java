@@ -26,8 +26,8 @@ public class Game extends Thread {
 
     public void run() {
         int currentQ = 0;
-        player1.sendToClient("Välkommen Spelare 1");
-        player2.sendToClient("Välkommen Spelare 2");
+        player1.sendToClient("Welcome Player 1");
+        player2.sendToClient("Welcome Player 2");
 
         ArrayList<ArrayList<String>> questions = category.getQuestionsList("11");
         for (int i = 0; i < numQuestion; i++) {
@@ -46,7 +46,7 @@ public class Game extends Thread {
 
 
         if (questions.isEmpty()) {
-            throw new IllegalStateException("Inga frågor tillgängliga för spelet.");
+            throw new IllegalStateException("No questions found");
         }
 
 
@@ -71,18 +71,18 @@ public class Game extends Thread {
 
 
 
-            player1.sendToClient("Slutpoäng: " + p1Score);
-            player2.sendToClient("Slutpoäng: " + p2Score);
+            player1.sendToClient("Final Score: " + p1Score);
+            player2.sendToClient("Final Score: " + p2Score);
 
             if (p1Score > p2Score) {
-                player1.sendToClient("Du vann");
-                player2.sendToClient("Du förlorade");
+                player1.sendToClient("Victory");
+                player2.sendToClient("Defeat");
             } else if (p1Score < p2Score) {
-                player1.sendToClient("Du förlorade");
-                player2.sendToClient("Du vann");
+                player1.sendToClient("Victory");
+                player2.sendToClient("Defeat");
             } else {
-                player1.sendToClient("Oavgjort");
-                player2.sendToClient("Oavgjort");
+                player1.sendToClient("Draw");
+                player2.sendToClient("Draw");
             }
         }
     }
