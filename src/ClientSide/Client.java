@@ -18,18 +18,19 @@ public class Client {
 
             pw = new PrintWriter(socket.getOutputStream(), true);
             br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            BufferedReader bufTemp = new BufferedReader(new InputStreamReader(System.in));
 
             String messsage;
-            while ((messsage = br.readLine()) != null) {
+            for (int i = 0; i < 6; i++) {
+                messsage = br.readLine();
                 System.out.println(messsage);
-                if (messsage.startsWith("Question")) {
-                    System.out.print("Your answer: ");
-                    String answer = new BufferedReader(new InputStreamReader(System.in)).readLine();
-                    pw.println(answer);
-                }
             }
-        }
-        catch (IOException e) {
+
+            System.out.print("Your answer: ");
+            String answer = bufTemp.readLine();
+            pw.println(answer);
+
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
