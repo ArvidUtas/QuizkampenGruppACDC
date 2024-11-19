@@ -21,15 +21,23 @@ public class Client {
             BufferedReader bufTemp = new BufferedReader(new InputStreamReader(System.in));
 
             String messsage;
-            for (int i = 0; i < 6; i++) {
+            messsage = br.readLine();
+            System.out.println(messsage);
+            messsage = br.readLine();
+            System.out.println(messsage);
+            while (true) {
+                for (int i = 0; i < 5; i++) {
+                    messsage = br.readLine();
+                    System.out.println(messsage);
+                }
+
+                System.out.print("Your answer: ");
+                String answer = bufTemp.readLine();
+                pw.println(answer);
+
                 messsage = br.readLine();
                 System.out.println(messsage);
             }
-
-            System.out.print("Your answer: ");
-            String answer = bufTemp.readLine();
-            pw.println(answer);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
