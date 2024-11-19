@@ -12,7 +12,6 @@ public class Game extends Thread {
     private int p2Score = 0;
 
 
-
     public Game(Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
@@ -26,14 +25,23 @@ public class Game extends Thread {
     }
 
     public void run() {
+        int currentQ = 0;
         player1.sendToClient("Välkommen Spelare 1");
         player2.sendToClient("Välkommen Spelare 2");
+
         ArrayList<ArrayList<String>> questions = category.getQuestionsList("11");
-        sendToBothClients(questions.getFirst().getFirst());
-        sendToBothClients(questions.getFirst().get(2));
-        sendToBothClients(questions.getFirst().get(3));
-        sendToBothClients(questions.getFirst().get(4));
-        sendToBothClients(questions.getFirst().get(5));
+        for (int i = 0; i < numQuestion; i++) {
+            sendQnAs(questions, currentQ);
+            currentQ++;
+        }
+    }
+
+    public void sendQnAs(ArrayList<ArrayList<String>> questions, int currentQ){
+        sendToBothClients("Question" + questions.get(currentQ).getFirst());
+        sendToBothClients(questions.get(currentQ).get(2));
+        sendToBothClients(questions.get(currentQ).get(3));
+        sendToBothClients(questions.get(currentQ).get(4));
+        sendToBothClients(questions.get(currentQ).get(5));
 
 
 
@@ -44,8 +52,8 @@ public class Game extends Thread {
 
 
         for (int round = 1; round <= numRounds; round++) {
-            player1.sendToClient("Runda " + round);
-            player2.sendToClient("Runda " + round);
+            player1.sendToClient("Round " + round);
+            player2.sendToClient("Round " + round);
             Question currentQuestion = null;
 
 
@@ -57,7 +65,10 @@ public class Game extends Thread {
 
                 if (currentQuestion.isCorrect(player1Answer)) p1Score++;
                 if (currentQuestion.isCorrect(player2Answer)) p2Score++;
+
+                }
             }
+
 
 
             player1.sendToClient("Slutpoäng: " + p1Score);
@@ -73,9 +84,7 @@ public class Game extends Thread {
                 player1.sendToClient("Oavgjort");
                 player2.sendToClient("Oavgjort");
             }
-
-
         }
     }
-}
+
 
