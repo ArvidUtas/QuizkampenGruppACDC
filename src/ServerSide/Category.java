@@ -7,15 +7,26 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import AccessFromBothSides.EnumCategories;
 import com.google.gson.*;
 
 public class Category {
 
-    public ArrayList<ArrayList<String>> getQuestionsList(String category) {
-        //String url = "https://opentdb.com/api.php?amount=6&category=" + category + "&difficulty=easy&type=multiple";
-        String url = "https://opentdb.com/api.php?amount=6&category=11&difficulty=easy&type=multiple";
-        ArrayList<ArrayList<String>> listOfLists = new ArrayList<>();
 
+    public ArrayList<EnumCategories> getCategories(){
+        ArrayList<EnumCategories> listOfCategories = new ArrayList<>();
+        Collections.addAll(listOfCategories, EnumCategories.FILM, EnumCategories.GEOGRAPHY,
+                EnumCategories.POLITICS, EnumCategories.SPORTS, EnumCategories.VEHICLES);
+        return listOfCategories;
+    }
+
+    public ArrayList<ArrayList<String>> getQuestionsList(String category) {
+        String url = "https://opentdb.com/api.php?amount=6&category="
+                + category + "&difficulty=easy&type=multiple";
+
+        //String url = "https://opentdb.com/api.php?amount=6&category=11&difficulty=easy&type=multiple";
+        ArrayList<ArrayList<String>> listOfLists = new ArrayList<>();
 
         // Create HttpClient and HttpRequest
         try (HttpClient client = HttpClient.newHttpClient()){
