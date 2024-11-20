@@ -33,16 +33,17 @@ public class Protocol {
         while (true) {
             if (state == CATEGORY) {
                 currentPlayer = player1;
-                String chosenCategory = "";
-                currentPlayer.sendStringToClient("Choose your category"); //Kanske Response?
-                chosenCategory = currentPlayer.receieveFromClient();
+                Response catResponse = new Response(CATEGORY, currentRound, currentQ, p1Score, p2Score,
+                        null, "Choose your category");
+                currentPlayer.sendToClient(catResponse);
+                String chosenCategory = currentPlayer.receieveFromClient();
                 questions = category.getQuestionsList(chosenCategory);
                 if (questions.isEmpty()) {
                     throw new IllegalStateException("No questions found");
                 }
                 state = QUESTION;
             } else if (state == QUESTION) {
-                Response qNAs = new Response(currentRound, currentQ, p1Score, p2Score, questions.get(currentQ - 1), null);
+                Response qNAs = new Response(QUESTION, currentRound, currentQ, p1Score, p2Score, questions.get(currentQ - 1), null);
                 sendToBothClients(qNAs);
                 state = ANSWER;
             } else if (state == ANSWER) {

@@ -4,21 +4,27 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Response implements Serializable {
-    private int state;
+    private final int CATEGORY = 1;
+    private final int QUESTION = 2;
+    private final int MESSAGE = 3;
+    private int type;
+
     private int currentRound = 1;
     private int currentQ = 1;
     private int player1score = 0;
     private int player2score = 0;
     private ArrayList<String> question;
-    private String optionalMessage;
+    private String message;
 
-    public Response(int currentRound, int currentQ, int player1score, int player2score, ArrayList<String> question, String optionalMessage) {
+    public Response(int type, int currentRound, int currentQ, int player1score, int player2score,
+                    ArrayList<String> question, String optionalMessage) {
+        this.type = type;
         this.currentRound = currentRound;
         this.currentQ = currentQ;
         this.player1score = player1score;
         this.player2score = player2score;
         this.question = question;
-        this.optionalMessage = optionalMessage;
+        this.message = optionalMessage;
     }
 
     public int getCurrentRound() {
@@ -61,11 +67,19 @@ public class Response implements Serializable {
         this.question = question;
     }
 
-    public String getOptionalMessage() {
-        return optionalMessage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setOptionalMessage(String optionalMessage) {
-        this.optionalMessage = optionalMessage;
+    public void setMessage(String optionalMessage) {
+        this.message = optionalMessage;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

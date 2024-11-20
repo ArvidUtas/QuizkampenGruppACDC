@@ -26,7 +26,6 @@ public class Game extends Thread {
     }
 
     public void run() {
-        player1.sendStringToClient("Welcome Player 1");
         player2.sendStringToClient("Welcome Player 2");
 
         Protocol protocol = new Protocol(numQuestion, numRounds, player1, player2);

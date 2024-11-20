@@ -1,5 +1,7 @@
 package ClientSide;
 
+import AccessFromBothSides.Response;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -16,16 +18,23 @@ public class Client {
 
             System.out.println("Connected to " + hostName + "\nPort: " + portNumber);
 
-            Object message;
-            while ((message = in.readObject()) != null) {
-                message = in.readObject();
-                if (message instanceof String)
-                    System.out.println(message);
+            System.out.println(in.readObject());
+
+            Object obj;
+            while (true) {
+                obj = in.readObject();
+                if (obj instanceof Response response) {
+                    if (response.getType() == 1){
+                        System.out.println(response.getMessage());}
+                    else if (response.getType() == 2) {
+                        System.out.println("Question: " + response.getQuestion().getFirst() + "\n" +
+                                response.getQuestion().get(2) + "\n" +
+                                response.getQuestion().get(3) + "\n" +
+                                response.getQuestion().get(4) + "\n" +
+                                response.getQuestion().get(5));
+                    }
+                }
             }
-
-
-
-
 
             /*
             messsage = in.readLine();
