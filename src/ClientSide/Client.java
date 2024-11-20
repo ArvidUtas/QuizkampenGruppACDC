@@ -4,9 +4,6 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client {
-
-    ;
-
     public Client() {
 
         String hostName = "localhost";
@@ -19,9 +16,18 @@ public class Client {
 
             System.out.println("Connected to " + hostName + "\nPort: " + portNumber);
 
-            Object messsage = in.readObject();
-            if (messsage instanceof String)
-                System.out.println(messsage);
+            Object message;
+            while ((message = in.readObject()) != null) {
+                message = in.readObject();
+                if (message instanceof String)
+                    System.out.println(message);
+            }
+
+
+
+
+
+            /*
             messsage = in.readLine();
             System.out.println(messsage);
             while (true) {
@@ -36,7 +42,7 @@ public class Client {
 
                 messsage = in.readLine();
                 System.out.println(messsage);
-            }
+            }*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
