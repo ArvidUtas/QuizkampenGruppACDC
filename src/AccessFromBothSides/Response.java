@@ -84,4 +84,20 @@ public class Response implements Serializable {
     public void setType(int type) {
         this.type = type;
     }
+
+    /**
+     * En toString metod bara föra att kunna se i consolen att t ex poängen mm. uppdateras.
+     */
+    @Override
+    public String toString() {
+        return "Response{" +
+                "type=" + type +
+                ", currentRound=" + currentRound +
+                ", currentQ=" + currentQ +
+                ", player1score=" + player1score +
+                ", player2score=" + player2score +
+                ", question=" + question +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

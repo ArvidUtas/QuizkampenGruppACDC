@@ -51,54 +51,61 @@ public class Protocol {
                 sendToBothClients(qNAs);
                 state = ANSWER;
             } else if (state == ANSWER) {
-                ExecutorService executor = Executors.newFixedThreadPool(2); // Create a thread pool for two players
 
-// Thread for Player 1
-                executor.submit(() -> {
+                /** Skapar trådar för spelarna.
+                 * Nu kan t ex player2 skicka in sitt svarsalternativ och få svar på om det var rätt/fel samt få sin poäng
+                 * uppdaterat. Innan gick det inte att göra eftersom programmet stod och väntade på player1.
+                 */
+                Thread player1Thread = new Thread(() -> {
                     try {
                         String player1Answer = player1.receieveFromClient();
                         String corrOrWro;
-
+                        synchronized (this) {
                             if (questions.get(currentQ - 1).get(1).equals(player1Answer)) {
                                 p1Score++;
                                 corrOrWro = "Correct!";
                             } else {
                                 corrOrWro = "Wrong!";
                             }
-                            Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
-                                    p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
-                            player1.sendToClient(answerCheck);
-
-
+                        }
+                        Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
+                                p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
+                        player1.sendToClient(answerCheck);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
 
-// Thread for Player 2
-                executor.submit(() -> {
+                Thread player2Thread = new Thread(() -> {
                     try {
                         String player2Answer = player2.receieveFromClient();
                         String corrOrWro;
-
+                        synchronized (this) {
                             if (questions.get(currentQ - 1).get(1).equals(player2Answer)) {
                                 p2Score++;
                                 corrOrWro = "Correct!";
                             } else {
                                 corrOrWro = "Wrong!";
                             }
-                            Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
-                                    p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
-                            player2.sendToClient(answerCheck);
-
-
+                        }
+                        Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
+                                p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
+                        player2.sendToClient(answerCheck);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
 
-                executor.shutdown();
 
+                player1Thread.start();
+                player2Thread.start();
+
+                try {
+                    player1Thread.join();
+                    player2Thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 currentQ++;
                 if (currentQ > numQuestion)
@@ -135,6 +142,8 @@ public class Protocol {
             }
         }
     }
+
+
 
     public void sendToBothClients(Response response) {
         player1.sendToClient(response);

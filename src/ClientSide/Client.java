@@ -23,6 +23,7 @@ public class Client {
 
             while (true) {
                 obj = in.readObject();
+                System.out.println(obj);
                 if (obj instanceof Response response) {
                     if (response.getType() == Response.CATEGORY) {
                         System.out.println(response.getMessage());
