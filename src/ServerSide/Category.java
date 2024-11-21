@@ -7,15 +7,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import AccessFromBothSides.EnumCategories;
 import com.google.gson.*;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class Category {
+    public ArrayList<EnumCategories> getCategories(){
+        ArrayList<EnumCategories> listOfCategories = new ArrayList<>();
+        Collections.addAll(listOfCategories, EnumCategories.FILM, EnumCategories.GEOGRAPHY,
+                EnumCategories.POLITICS, EnumCategories.SPORTS, EnumCategories.VEHICLES);
+        return listOfCategories;
+    }
 
     public ArrayList<ArrayList<String>> getQuestionsList(String category) {
-        //String url = "https://opentdb.com/api.php?amount=6&category=" + category + "&difficulty=easy&type=multiple";
-        String url = "https://opentdb.com/api.php?amount=6&category=11&difficulty=easy&type=multiple";
+        String url = "https://opentdb.com/api.php?amount=6&category="
+                + category + "&difficulty=easy&type=multiple";
         ArrayList<ArrayList<String>> listOfLists = new ArrayList<>();
-
 
         // Create HttpClient and HttpRequest
         try (HttpClient client = HttpClient.newHttpClient()){
@@ -37,23 +45,19 @@ public class Category {
                     //Get incorrect answers from array and add to list
                     JsonArray incorrectAnswersArray = questionObject.getAsJsonArray("incorrect_answers");
                     for (int i = 0; i < incorrectAnswersArray.size(); i++) {
-                        String incorrectAnswer = incorrectAnswersArray.get(i).getAsString().
-                                replaceAll("&#039;", "'").
-                                replaceAll("&quot;", "\"").
-                                replaceAll("&rsquo;", "’");
+                        String incorrectAnswer = incorrectAnswersArray.get(i).getAsString();
+                        incorrectAnswer = StringEscapeUtils.unescapeHtml4(incorrectAnswer); //Removes HTML formatting, "&quot;" etc.
                         questAndAns.add((incorrectAnswer));
                     }
-                    String correct_answer = questionObject.get("correct_answer").getAsString()
-                            .replaceAll("&#039;", "'").replaceAll("&quot;", "\"").
-                            replaceAll("&rsquo;", "’");
+                    String correct_answer = questionObject.get("correct_answer").getAsString();
+                    correct_answer = StringEscapeUtils.unescapeHtml4(correct_answer);
                     questAndAns.add(correct_answer); //Add correct answer as one of answer options
                     Collections.shuffle(questAndAns); //Shuffle answer options
 
                     questAndAns.addFirst(correct_answer); //Added at [1], position of correct answer
 
-                    String question = questionObject.get("question").getAsString().
-                            replaceAll("&#039;", "'").replaceAll("&quot;", "\"").
-                            replaceAll("&rsquo;", "’");
+                    String question = questionObject.get("question").getAsString();
+                    question = StringEscapeUtils.unescapeHtml4(question);
                     questAndAns.addFirst(question); //Added at [0], position of question
                     listOfLists.add(questAndAns);
 

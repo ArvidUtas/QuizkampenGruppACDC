@@ -1,9 +1,8 @@
 package ServerSide;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import AccessFromBothSides.Response;
+
+import java.io.*;
 import java.net.Socket;
 
 public class Player {
@@ -11,22 +10,38 @@ public class Player {
     private char playerNum;
     private Player opponent;
     private BufferedReader in;
-    private PrintWriter out;
+    private ObjectOutputStream out;
 
     public Player(Socket socket, char playerNum) {
         this.socket = socket;
         this.playerNum = playerNum;
         try {
-            out = new PrintWriter(socket.getOutputStream(), true);
+            out = new ObjectOutputStream(socket.getOutputStream());
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public void sendToClient(String message){
-        out.println(message);
+    public void sendToClient(Response response){
+        try {
+            out.writeObject(response);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void sendStringToClient(String message){
+        try {
+            out.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
+    }
+    public Player getOpponent() {
+        return opponent;
     }
 
 
