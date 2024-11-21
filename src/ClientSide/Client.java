@@ -23,7 +23,7 @@ public class Client {
 
             while (true) {
                 obj = in.readObject();
-                System.out.println(obj);
+                System.out.println(obj); //skriver ut toString-metoden
                 if (obj instanceof Response response) {
                     if (response.getType() == Response.CATEGORY) {
                         System.out.println(response.getMessage());
