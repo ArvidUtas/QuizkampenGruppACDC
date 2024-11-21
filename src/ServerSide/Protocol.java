@@ -21,6 +21,7 @@ public class Protocol {
     private Player player2;
     private Player currentPlayer;
 
+    Response response;
     ArrayList<ArrayList<String>> questions;
     private Category category = new Category();
 
@@ -33,7 +34,7 @@ public class Protocol {
         while (true) {
             if (state == CATEGORY) {
                 currentPlayer = player1;
-                Response catResponse = new Response(CATEGORY, currentRound, currentQ, p1Score, p2Score,
+                Response catResponse = new Response(1, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category");
                 currentPlayer.sendToClient(catResponse);
                 String chosenCategory = currentPlayer.receieveFromClient();
@@ -43,7 +44,8 @@ public class Protocol {
                 }
                 state = QUESTION;
             } else if (state == QUESTION) {
-                Response qNAs = new Response(QUESTION, currentRound, currentQ, p1Score, p2Score, questions.get(currentQ - 1), null);
+                Response qNAs = new Response(2, currentRound, currentQ,
+                        p1Score, p2Score, questions.get(currentQ - 1), null);
                 sendToBothClients(qNAs);
                 state = ANSWER;
             } else if (state == ANSWER) {

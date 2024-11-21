@@ -1,5 +1,6 @@
 package ClientSide;
 
+import AccessFromBothSides.EnumCategories;
 import AccessFromBothSides.Response;
 
 import java.io.*;
@@ -17,41 +18,41 @@ public class Client {
             BufferedReader bufTemp = new BufferedReader(new InputStreamReader(System.in));
 
             System.out.println("Connected to " + hostName + "\nPort: " + portNumber);
-
             System.out.println(in.readObject());
-
             Object obj;
+
             while (true) {
                 obj = in.readObject();
                 if (obj instanceof Response response) {
-                    if (response.getType() == 1){
-                        System.out.println(response.getMessage());}
-                    else if (response.getType() == 2) {
+                    if (response.getType() == 1) {
+                        System.out.println(response.getMessage());
+                        String chosenCat = bufTemp.readLine();
+                        String catToSend = "";
+//                        if (chosenCat.equalsIgnoreCase(EnumCategories.FILM.getText())) catToSend = EnumCategories.FILM.getValue();
+//                        else if (chosenCat.equalsIgnoreCase(EnumCategories.SPORTS.getText())) catToSend = EnumCategories.SPORTS.getValue();
+//                        else if (chosenCat.equalsIgnoreCase(EnumCategories.GEOGRAPHY.getText())) catToSend = EnumCategories.GEOGRAPHY.getValue();
+//                        else if (chosenCat.equalsIgnoreCase(EnumCategories.POLITICS.getText())) catToSend = EnumCategories.POLITICS.getValue();
+//                        else if (chosenCat.equalsIgnoreCase(EnumCategories.VEHICLES.getText())) catToSend = EnumCategories.VEHICLES.getValue();
+                        for (EnumCategories category : EnumCategories.values()) {
+                            if (chosenCat.equalsIgnoreCase(category.getText())) {
+                                catToSend = category.getValue();
+                                break;
+                            }
+                        }
+                        out.println(catToSend);
+
+                    } else if (response.getType() == 2) {
                         System.out.println("Question: " + response.getQuestion().getFirst() + "\n" +
                                 response.getQuestion().get(2) + "\n" +
                                 response.getQuestion().get(3) + "\n" +
                                 response.getQuestion().get(4) + "\n" +
                                 response.getQuestion().get(5));
+                        String answer = bufTemp.readLine();
+                        out.println(answer);
                     }
                 }
             }
 
-            /*
-            messsage = in.readLine();
-            System.out.println(messsage);
-            while (true) {
-                for (int i = 0; i < 5; i++) {
-                    messsage = in.readLine();
-                    System.out.println(messsage);
-                }
-
-                System.out.print("Your answer: ");
-                String answer = bufTemp.readLine();
-                out.println(answer);
-
-                messsage = in.readLine();
-                System.out.println(messsage);
-            }*/
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {

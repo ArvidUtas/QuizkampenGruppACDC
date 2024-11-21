@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Response implements Serializable {
-    private final int CATEGORY = 1;
-    private final int QUESTION = 2;
-    private final int MESSAGE = 3;
+    private final static int CATEGORY = 1;
+    private final static int QUESTION = 2;
+    private final static int MESSAGE = 3;
     private int type;
 
     private int currentRound = 1;
