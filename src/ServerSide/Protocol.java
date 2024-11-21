@@ -34,7 +34,7 @@ public class Protocol {
         while (true) {
             if (state == CATEGORY) {
                 currentPlayer = player1;
-                Response catResponse = new Response(1, currentRound, currentQ, p1Score, p2Score,
+                Response catResponse = new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category");
                 currentPlayer.sendToClient(catResponse);
                 String chosenCategory = currentPlayer.receieveFromClient();

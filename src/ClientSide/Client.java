@@ -24,7 +24,7 @@ public class Client {
             while (true) {
                 obj = in.readObject();
                 if (obj instanceof Response response) {
-                    if (response.getType() == 1) {
+                    if (response.getType() == Response.CATEGORY) {
                         System.out.println(response.getMessage());
                         String chosenCat = bufTemp.readLine();
                         String catToSend = "";
@@ -41,7 +41,7 @@ public class Client {
                         }
                         out.println(catToSend);
 
-                    } else if (response.getType() == 2) {
+                    } else if (response.getType() == Response.QUESTION) {
                         System.out.println("Question: " + response.getQuestion().getFirst() + "\n" +
                                 response.getQuestion().get(2) + "\n" +
                                 response.getQuestion().get(3) + "\n" +
