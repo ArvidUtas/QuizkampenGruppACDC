@@ -6,8 +6,9 @@ import java.util.ArrayList;
 public class Response implements Serializable {
     public final static int CATEGORY = 0;
     public final static int QUESTION = 1;
-    public final static int ANSWER_CONTROL = 2;
-        public final static int MESSAGE = 3;
+    public final static int ANSWER_CHECK = 2;
+    public final static int FINAL_SCORE = 3;
+    public final static int MESSAGE = 4;
     private int type;
 
     private int currentRound = 1;

@@ -30,10 +30,10 @@ public class Protocol {
         this.numRounds = numRounds;
         this.player1 = player1;
         this.player2 = player2;
+        currentPlayer = player1;
 
         while (true) {
             if (state == CATEGORY) {
-                currentPlayer = player1;
                 Response catResponse = new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category");
                 currentPlayer.sendToClient(catResponse);
@@ -44,23 +44,31 @@ public class Protocol {
                 }
                 state = QUESTION;
             } else if (state == QUESTION) {
-                Response qNAs = new Response(2, currentRound, currentQ,
+                Response qNAs = new Response(Response.QUESTION, currentRound, currentQ,
                         p1Score, p2Score, questions.get(currentQ - 1), null);
                 sendToBothClients(qNAs);
                 state = ANSWER;
             } else if (state == ANSWER) {
+                String corrOrWro = "";
                 String player1Answer = player1.receieveFromClient();
-                String player2Answer = player2.receieveFromClient();
-                if (questions.get(currentQ).get(1).equals(player1Answer)) {
-                    player1.sendStringToClient("Correct!");
+                if (questions.get(currentQ - 1).get(1).equals(player1Answer)) {
                     p1Score++;
+                    corrOrWro = "Correct!";
                 } else
-                    player1.sendStringToClient("Wrong!");
-                if (questions.get(currentQ).get(1).equals(player2Answer)) {
-                    player2.sendStringToClient("Correct!");
+                    corrOrWro = "Wrong!";
+                Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
+                        p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
+                player1.sendToClient(answerCheck);
+
+                String player2Answer = player2.receieveFromClient();
+                if (questions.get(currentQ - 1).get(1).equals(player2Answer)) {
                     p2Score++;
+                    corrOrWro = "Correct!";
                 } else
-                    player2.sendStringToClient("Wrong!");
+                    corrOrWro = "Wrong!";
+                answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
+                        p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
+                player2.sendToClient(answerCheck);
 
                 currentQ++;
                 if (currentQ > numQuestion)
@@ -73,18 +81,25 @@ public class Protocol {
                     currentQ = 1;
                     if (currentPlayer == player1)
                         currentPlayer = player2;
+                    else if (currentPlayer == player2)
+                        currentPlayer = player1;
+
                 } else
                     state = FINAL_SCORE;
             } else if (state == FINAL_SCORE) {
                 if (p1Score > p2Score) {
-                    player1.sendStringToClient("Victory");
-                    player2.sendStringToClient("Defeat");
+                    player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
+                            p1Score, p2Score, questions.get(currentQ - 1), "Victory!"));
+                    player2.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
+                            p1Score, p2Score, questions.get(currentQ - 1), "Defeat"));
                 } else if (p1Score < p2Score) {
-                    player1.sendStringToClient("Defeat");
-                    player2.sendStringToClient("Victory");
+                    player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
+                            p1Score, p2Score, questions.get(currentQ - 1), "Defeat"));
+                    player2.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
+                            p1Score, p2Score, questions.get(currentQ - 1), "Victory!"));
                 } else {
-                    player1.sendStringToClient("Draw");
-                    player2.sendStringToClient("Draw");
+                    sendToBothClients(new Response(Response.FINAL_SCORE, currentRound, currentQ,
+                            p1Score, p2Score, questions.get(currentQ - 1), "Draw"));
                 }
                 break;
             }

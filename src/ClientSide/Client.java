@@ -49,6 +49,11 @@ public class Client {
                                 response.getQuestion().get(5));
                         String answer = bufTemp.readLine();
                         out.println(answer);
+                    } else if (response.getType() == Response.ANSWER_CHECK) {
+                        System.out.println(response.getMessage());
+                    } else if (response.getType() == Response.FINAL_SCORE) {
+                        System.out.println(response.getMessage());
+                        System.out.println("Player 1: " + response.getPlayer1score() + " Player 2: " + response.getPlayer2score());
                     }
                 }
             }
