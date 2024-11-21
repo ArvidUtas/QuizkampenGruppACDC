@@ -2,6 +2,8 @@ package ServerSide;
 
 import AccessFromBothSides.Response;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Protocol {
     private final int CATEGORY = 0;
@@ -49,26 +51,54 @@ public class Protocol {
                 sendToBothClients(qNAs);
                 state = ANSWER;
             } else if (state == ANSWER) {
-                String corrOrWro = "";
-                String player1Answer = player1.receieveFromClient();
-                if (questions.get(currentQ - 1).get(1).equals(player1Answer)) {
-                    p1Score++;
-                    corrOrWro = "Correct!";
-                } else
-                    corrOrWro = "Wrong!";
-                Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
-                        p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
-                player1.sendToClient(answerCheck);
+                ExecutorService executor = Executors.newFixedThreadPool(2); // Create a thread pool for two players
 
-                String player2Answer = player2.receieveFromClient();
-                if (questions.get(currentQ - 1).get(1).equals(player2Answer)) {
-                    p2Score++;
-                    corrOrWro = "Correct!";
-                } else
-                    corrOrWro = "Wrong!";
-                answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
-                        p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
-                player2.sendToClient(answerCheck);
+// Thread for Player 1
+                executor.submit(() -> {
+                    try {
+                        String player1Answer = player1.receieveFromClient();
+                        String corrOrWro;
+
+                            if (questions.get(currentQ - 1).get(1).equals(player1Answer)) {
+                                p1Score++;
+                                corrOrWro = "Correct!";
+                            } else {
+                                corrOrWro = "Wrong!";
+                            }
+                            Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
+                                    p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
+                            player1.sendToClient(answerCheck);
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+// Thread for Player 2
+                executor.submit(() -> {
+                    try {
+                        String player2Answer = player2.receieveFromClient();
+                        String corrOrWro;
+
+                            if (questions.get(currentQ - 1).get(1).equals(player2Answer)) {
+                                p2Score++;
+                                corrOrWro = "Correct!";
+                            } else {
+                                corrOrWro = "Wrong!";
+                            }
+                            Response answerCheck = new Response(Response.ANSWER_CHECK, currentRound, currentQ,
+                                    p1Score, p2Score, questions.get(currentQ - 1), corrOrWro);
+                            player2.sendToClient(answerCheck);
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                executor.shutdown();
+
 
                 currentQ++;
                 if (currentQ > numQuestion)

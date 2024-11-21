@@ -25,7 +25,10 @@ public class Player {
     }
     public void sendToClient(Response response){
         try {
+            System.out.println("Sending response to client: " + response);
             out.writeObject(response);
+            out.flush();
+            System.out.println("Response sent successfully.");
         } catch (IOException e) {
             e.printStackTrace();
         }
