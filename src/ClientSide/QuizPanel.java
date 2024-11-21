@@ -28,6 +28,7 @@ public class QuizPanel implements ActionListener {
         frame.setVisible(true);
     }
 
+
     private void showCategorySelection() {
         mainPanel.removeAll();
         JLabel label = new JLabel("Choose a category", JLabel.CENTER);
