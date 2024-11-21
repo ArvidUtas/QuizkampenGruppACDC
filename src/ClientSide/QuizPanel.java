@@ -91,7 +91,7 @@ public class QuizPanel implements ActionListener {
         mainPanel.add(scoreLabel, BorderLayout.CENTER);
 
         nextButton = new JButton("Next  ");
-        nextButton.addActionListener(e -> showQuestionStage());
+        nextButton.addActionListener(e -> showCategorySelection());
         mainPanel.add(nextButton, BorderLayout.SOUTH);
 
         mainPanel.revalidate();
