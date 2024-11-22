@@ -5,18 +5,32 @@ import AccessFromBothSides.Response;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class QuizPanel {
+    Client client;
     private JFrame frame;
     private JPanel mainPanel;
     private Protocol protocol;
+    private String chosenCat = "";
+    private Socket socket;
+    private ObjectInputStream in;
+    private PrintWriter out;
 
-    public QuizPanel() {
-        protocol = new Protocol("localhost", 23456); // Anslut till servern
+    public QuizPanel(Socket socket, PrintWriter out, ObjectInputStream in) {
+        this.socket = socket;
+        this.out = out;
+        this.in = in;
+        // protocol = new Protocol("localhost", 23456); // Anslut till servern
         MainFrame();
-        showCategorySelection();
+        //showCategorySelection();
     }
 
     private void MainFrame() {
@@ -30,7 +44,7 @@ public class QuizPanel {
     }
 
     // Visa kategorivalet
-    private void showCategorySelection() {
+    public void showCategorySelection() {
         mainPanel.removeAll();
 
         JLabel label = new JLabel("Välj en kategori", JLabel.CENTER);
@@ -45,14 +59,15 @@ public class QuizPanel {
         Collections.addAll(listOfCategories, EnumCategories.values());
 
         for (EnumCategories enumCategories : listOfCategories) {
-            JButton button = new JButton(enumCategories.toString());
+            JButton button = new JButton(enumCategories.getText());
             button.setPreferredSize(new Dimension(200, 50));
             button.addActionListener(e -> {
-                handleCategorySelection(enumCategories.getText());
-                Response questionResponse = protocol.receiveFromServer();
-                if (questionResponse != null && questionResponse.getType() == Response.QUESTION) {
-                    showQuestionStage(questionResponse.getQuestionData());
-                }
+                sendStringToServer(enumCategories.getValue());
+//                handleCategorySelection(enumCategories.getValue());
+//                Response questionResponse = protocol.receiveFromServer();
+//                if (questionResponse != null && questionResponse.getType() == Response.QUESTION) {
+//                    showQuestionStage(questionResponse.getQuestionData());
+//                }
             });
             buttonPanel.add(button);
             buttonPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
@@ -61,31 +76,54 @@ public class QuizPanel {
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
+
+    }
+
+    void emptyFrame(String message) {
+        mainPanel.removeAll();
+
+        JLabel label = new JLabel(message, JLabel.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setForeground(Color.BLACK);
+        mainPanel.add(label, BorderLayout.NORTH);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     // Hantera kategorivalet
     private void handleCategorySelection(String category) {
-        Response categoryResponse = new Response(Response.CATEGORY, 0, 0, 0, 0, null, category);
-        protocol.sendToServer(categoryResponse); // Skicka kategorin till servern
+        //Response categoryResponse = new Response(Response.CATEGORY, 0, 0, 0, 0, null, category);
+        //protocol.sendToServer(categoryResponse); // Skicka kategorin till servern
+        System.out.println(category);
+        sendStringToServer(category); // Skicka kategorin till servern
     }
 
     // Visa frågestadiet
-    private void showQuestionStage(ArrayList<String> questionData) {
+    public void showQuestionStage(ArrayList<String> questionData) {
         mainPanel.removeAll();
 
-        JLabel questionLabel = new JLabel(questionData.get(0), JLabel.CENTER);
+        JLabel questionLabel = new JLabel(questionData.getFirst(), JLabel.CENTER);
         questionLabel.setFont(new Font("Arial", Font.BOLD, 18));
         mainPanel.add(questionLabel, BorderLayout.NORTH);
 
         JPanel answerPanel = new JPanel();
         answerPanel.setLayout(new BoxLayout(answerPanel, BoxLayout.Y_AXIS));
 
-        for (int i = 1; i < questionData.size(); i++) {
+        for (int i = 2; i < questionData.size(); i++) {
             JButton answerButton = new JButton(questionData.get(i));
             answerButton.setPreferredSize(new Dimension(200, 50));
             answerButton.addActionListener(e -> {
-                handleAnswerSelection(answerButton.getText()); // Skicka svaret till servern
-                Response response = protocol.receiveFromServer(); // Vänta på feedback
+                sendStringToServer(answerButton.getText()); // Skicka svaret till servern
+//                handleAnswerSelection(answerButton.getText()); // Skicka svaret till servern
+
+                for (Component component : answerPanel.getComponents()) { //hindrar att man kan klicka på flera svar
+                    if (component instanceof JButton) {
+                        component.setEnabled(false);
+                    }
+                }
+
+                Response response = receiveFromServer(); // Vänta på feedback
                 if (response != null && response.getType() == Response.ANSWER_CHECK) {
                     showFeedback(response.getMessage()); // Visa feedback
                 }
@@ -134,7 +172,48 @@ public class QuizPanel {
         mainPanel.repaint();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(QuizPanel::new);
+    public void sendStringToServer(String message) {
+        try {
+            out.println(message);
+            out.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+//    // Skicka data till servern
+//    public void sendToServer(Response response) {
+//        try {
+//            out.writeObject(response);
+//            out.flush();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    // Hämta data från servern
+    public Response receiveFromServer() {
+        try {
+            return (Response) in.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Stäng anslutningen
+    public void closeConnection() {
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+//
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(QuizPanel::new);
+//    }
 }

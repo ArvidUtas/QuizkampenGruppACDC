@@ -37,6 +37,8 @@ public class Protocol {
             if (state == CATEGORY) {
                 Response catResponse = new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category");
+                player2.sendToClient(new Response(Response.OTHERPCATEGORY, currentRound, currentQ, p1Score, p2Score,
+                        null, "Wait for other player to choose category"));
                 currentPlayer.sendToClient(catResponse);
                 String chosenCategory = currentPlayer.receieveFromClient();
                 questions = category.getQuestionsList(chosenCategory);
