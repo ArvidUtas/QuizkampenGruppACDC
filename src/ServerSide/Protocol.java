@@ -3,7 +3,6 @@ package ServerSide;
 import AccessFromBothSides.Response;
 import java.util.ArrayList;
 
-
 public class Protocol {
     private final int CATEGORY = 0;
     private final int QUESTION = 1;
@@ -22,7 +21,6 @@ public class Protocol {
     private Player player2;
     private Player currentPlayer;
 
-    Response response;
     ArrayList<ArrayList<String>> questions;
     private Category category = new Category();
 
@@ -35,11 +33,10 @@ public class Protocol {
 
         while (true) {
             if (state == CATEGORY) {
-                Response catResponse = new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
-                        null, "Choose your category");
-                player2.sendToClient(new Response(Response.OTHERPCATEGORY, currentRound, currentQ, p1Score, p2Score,
+                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE, currentRound, currentQ, p1Score, p2Score,
                         null, "Wait for other player to choose category"));
-                currentPlayer.sendToClient(catResponse);
+                currentPlayer.sendToClient(new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
+                        null, "Choose your category"));
                 String chosenCategory = currentPlayer.receieveFromClient();
                 questions = category.getQuestionsList(chosenCategory);
                 if (questions.isEmpty()) {
@@ -97,7 +94,6 @@ public class Protocol {
                     }
                 });
 
-
                 player1Thread.start();
                 player2Thread.start();
 
@@ -117,10 +113,7 @@ public class Protocol {
                 else if (currentQ > numQuestion && currentRound <= numRounds) {
                     state = CATEGORY;
                     currentQ = 1;
-                    if (currentPlayer == player1)
-                        currentPlayer = player2;
-                    else if (currentPlayer == player2)
-                        currentPlayer = player1;
+                    currentPlayer = currentPlayer.getOpponent();
 
                 } else
                     state = FINAL_SCORE;
@@ -129,10 +122,10 @@ public class Protocol {
                     player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
                             p1Score, p2Score, questions.get(currentQ - 1), "Victory!"));
                     player2.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
-                            p1Score, p2Score, questions.get(currentQ - 1), "Defeat"));
+                            p1Score, p2Score, questions.get(currentQ - 1), "Defeat."));
                 } else if (p1Score < p2Score) {
                     player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
-                            p1Score, p2Score, questions.get(currentQ - 1), "Defeat"));
+                            p1Score, p2Score, questions.get(currentQ - 1), "Defeat."));
                     player2.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
                             p1Score, p2Score, questions.get(currentQ - 1), "Victory!"));
                 } else {
@@ -143,8 +136,6 @@ public class Protocol {
             }
         }
     }
-
-
 
     public void sendToBothClients(Response response) {
         player1.sendToClient(response);
