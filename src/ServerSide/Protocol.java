@@ -2,8 +2,7 @@ package ServerSide;
 
 import AccessFromBothSides.Response;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 
 public class Protocol {
     private final int CATEGORY = 0;
