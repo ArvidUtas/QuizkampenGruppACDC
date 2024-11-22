@@ -46,7 +46,7 @@ public class Category {
                     JsonArray incorrectAnswersArray = questionObject.getAsJsonArray("incorrect_answers");
                     for (int i = 0; i < incorrectAnswersArray.size(); i++) {
                         String incorrectAnswer = incorrectAnswersArray.get(i).getAsString();
-                        incorrectAnswer = StringEscapeUtils.unescapeHtml4(incorrectAnswer); //Removes HTML formatting, "&quot;" etc.
+                       // incorrectAnswer = StringEscapeUtils.unescapeHtml4(incorrectAnswer); //Removes HTML formatting, "&quot;" etc.
                         questAndAns.add((incorrectAnswer));
                     }
                     String correct_answer = questionObject.get("correct_answer").getAsString();
