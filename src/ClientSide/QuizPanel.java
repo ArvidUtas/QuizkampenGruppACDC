@@ -1,19 +1,18 @@
 package ClientSide;
 
+import AccessFromBothSides.Response;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-public class QuizPanel implements ActionListener {
+public class QuizPanel {
     private JFrame frame;
     private JPanel mainPanel;
-    private JButton nextButton;
     private Protocol protocol;
 
     public QuizPanel() {
-        protocol = new Protocol();
+        protocol = new Protocol("localhost", 23456); // Anslut till servern
         MainFrame();
         showCategorySelection();
     }
@@ -28,81 +27,103 @@ public class QuizPanel implements ActionListener {
         frame.setVisible(true);
     }
 
-
+    // Visa kategorivalet
     private void showCategorySelection() {
         mainPanel.removeAll();
-        JLabel label = new JLabel("Choose a category", JLabel.CENTER);
+
+        JLabel label = new JLabel("Välj en kategori", JLabel.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setForeground(Color.BLACK);
         mainPanel.add(label, BorderLayout.NORTH);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
-        String[] categories = {"val 1", "val 2", "val 3"};
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+
+        String[] categories = {"Historia", "Vetenskap", "Djur & Natur"};
+
         for (String category : categories) {
             JButton button = new JButton(category);
+            button.setPreferredSize(new Dimension(200, 50));
             button.addActionListener(e -> {
-                protocol.handleCategorySelection(category);
-                showQuestionStage();
+                handleCategorySelection(category); // Skicka kategorin till servern
+                Response questionResponse = protocol.receiveFromServer(); // Vänta på serverns svar
+                if (questionResponse != null && questionResponse.getType() == Response.QUESTION) {
+                    showQuestionStage(questionResponse.getQuestionData());
+                }
             });
             buttonPanel.add(button);
+            buttonPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
         }
 
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
-    private void showQuestionStage() {
+
+    // Hantera kategorivalet
+    private void handleCategorySelection(String category) {
+        Response categoryResponse = new Response(Response.CATEGORY, 0, 0, 0, 0, null, category);
+        protocol.sendToServer(categoryResponse); // Skicka kategorin till servern
+    }
+
+    // Visa frågestadiet
+    private void showQuestionStage(ArrayList<String> questionData) {
         mainPanel.removeAll();
-        ArrayList<String> questionData = protocol.getCurrentQuestion();
-        if (questionData == null) {
-            showFinalScore();
-            return;
-        }
 
         JLabel questionLabel = new JLabel(questionData.get(0), JLabel.CENTER);
+        questionLabel.setFont(new Font("Arial", Font.BOLD, 18));
         mainPanel.add(questionLabel, BorderLayout.NORTH);
 
-        JPanel answerPanel = new JPanel(new GridLayout(4, 1));
-        ButtonGroup group = new ButtonGroup();
+        JPanel answerPanel = new JPanel();
+        answerPanel.setLayout(new BoxLayout(answerPanel, BoxLayout.Y_AXIS));
+
         for (int i = 1; i < questionData.size(); i++) {
-            JRadioButton answerButton = new JRadioButton(questionData.get(i));
-            answerButton.setActionCommand(questionData.get(i));
-            group.add(answerButton);
+            JButton answerButton = new JButton(questionData.get(i));
+            answerButton.setPreferredSize(new Dimension(200, 50));
+            answerButton.addActionListener(e -> {
+                handleAnswerSelection(answerButton.getText()); // Skicka svaret till servern
+                Response response = protocol.receiveFromServer(); // Vänta på feedback
+                if (response != null && response.getType() == Response.ANSWER_CHECK) {
+                    showFeedback(response.getMessage()); // Visa feedback
+                }
+            });
             answerPanel.add(answerButton);
+            answerPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
         }
 
-        JButton submitButton = new JButton("Submit");
-        submitButton.addActionListener(e -> {
-            if (group.getSelection() != null) {
-                protocol.submitAnswer(group.getSelection().getActionCommand());
-                showScoreboard();
-            } else {
-                JOptionPane.showMessageDialog(frame, "väljs ditt svar");
-            }
-        });
-
         mainPanel.add(answerPanel, BorderLayout.CENTER);
-        mainPanel.add(submitButton, BorderLayout.SOUTH);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
 
-    private void showScoreboard() {
-        mainPanel.removeAll();
-        JLabel scoreLabel = new JLabel("poäng" + protocol.getCurrentScore(), JLabel.CENTER);
-        mainPanel.add(scoreLabel, BorderLayout.CENTER);
-
-        nextButton = new JButton("Next  ");
-        nextButton.addActionListener(e -> showCategorySelection());
-        mainPanel.add(nextButton, BorderLayout.SOUTH);
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
+    // Hantera svaret
+    private void handleAnswerSelection(String answer) {
+        Response answerResponse = new Response(Response.ANSWER, 0, 0, 0, 0, null, answer);
+        protocol.sendToServer(answerResponse); // Skicka svaret till servern
     }
-    private void showFinalScore() {
+
+    // Visa feedback på svaret
+    private void showFeedback(String feedback) {
+        JOptionPane.showMessageDialog(frame, feedback);
+        Response nextQuestionResponse = protocol.receiveFromServer(); // Vänta på nästa fråga eller poäng
+        if (nextQuestionResponse != null) {
+            if (nextQuestionResponse.getType() == Response.QUESTION) {
+                showQuestionStage(nextQuestionResponse.getQuestionData());
+            } else if (nextQuestionResponse.getType() == Response.FINAL_SCORE) {
+                showFinalScore(nextQuestionResponse.getMessage());
+            }
+        }
+    }
+
+    // Visa slutresultatet
+    private void showFinalScore(String finalScore) {
         mainPanel.removeAll();
-        JLabel finalScoreLabel = new JLabel("Game Over! Final Score: " + protocol.getCurrentScore(), JLabel.CENTER);
+
+        JLabel finalScoreLabel = new JLabel("Slutresultat: " + finalScore, JLabel.CENTER);
+        finalScoreLabel.setFont(new Font("Arial", Font.BOLD, 24));
         mainPanel.add(finalScoreLabel, BorderLayout.CENTER);
 
-        JButton playAgainButton = new JButton("Play Again");
+        JButton playAgainButton = new JButton("Spela igen");
         playAgainButton.addActionListener(e -> showCategorySelection());
         mainPanel.add(playAgainButton, BorderLayout.SOUTH);
 
@@ -110,14 +131,7 @@ public class QuizPanel implements ActionListener {
         mainPanel.repaint();
     }
 
-
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(QuizPanel::new);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-
     }
 }

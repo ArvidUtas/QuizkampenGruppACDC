@@ -10,7 +10,7 @@ import java.util.Collections;
 
 import AccessFromBothSides.EnumCategories;
 import com.google.gson.*;
-import org.apache.commons.text.StringEscapeUtils;
+//import org.apache.commons.text.StringEscapeUtils;
 
 public class Category {
     public ArrayList<EnumCategories> getCategories(){
@@ -46,18 +46,18 @@ public class Category {
                     JsonArray incorrectAnswersArray = questionObject.getAsJsonArray("incorrect_answers");
                     for (int i = 0; i < incorrectAnswersArray.size(); i++) {
                         String incorrectAnswer = incorrectAnswersArray.get(i).getAsString();
-                        incorrectAnswer = StringEscapeUtils.unescapeHtml4(incorrectAnswer); //Removes HTML formatting, "&quot;" etc.
+                       // incorrectAnswer = StringEscapeUtils.unescapeHtml4(incorrectAnswer); //Removes HTML formatting, "&quot;" etc.
                         questAndAns.add((incorrectAnswer));
                     }
                     String correct_answer = questionObject.get("correct_answer").getAsString();
-                    correct_answer = StringEscapeUtils.unescapeHtml4(correct_answer);
+                  //  correct_answer = StringEscapeUtils.unescapeHtml4(correct_answer);
                     questAndAns.add(correct_answer); //Add correct answer as one of answer options
                     Collections.shuffle(questAndAns); //Shuffle answer options
 
                     questAndAns.addFirst(correct_answer); //Added at [1], position of correct answer
 
                     String question = questionObject.get("question").getAsString();
-                    question = StringEscapeUtils.unescapeHtml4(question);
+                 //   question = StringEscapeUtils.unescapeHtml4(question);
                     questAndAns.addFirst(question); //Added at [0], position of question
                     listOfLists.add(questAndAns);
 

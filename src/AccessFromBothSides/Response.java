@@ -9,6 +9,7 @@ public class Response implements Serializable {
     public final static int ANSWER_CHECK = 2;
     public final static int FINAL_SCORE = 3;
     public final static int MESSAGE = 4;
+    public static final int ANSWER = 5;
     private int type;
 
     private int currentRound = 1;
@@ -83,5 +84,9 @@ public class Response implements Serializable {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public ArrayList<String> getQuestionData() {
+        return question;
     }
 }
