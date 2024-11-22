@@ -1,10 +1,12 @@
 package ClientSide;
 
+import AccessFromBothSides.EnumCategories;
 import AccessFromBothSides.Response;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class QuizPanel {
     private JFrame frame;
@@ -39,14 +41,15 @@ public class QuizPanel {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
 
-        String[] categories = {"Historia", "Vetenskap", "Djur & Natur"};
+        ArrayList<EnumCategories> listOfCategories = new ArrayList<>();
+        Collections.addAll(listOfCategories, EnumCategories.values());
 
-        for (String category : categories) {
-            JButton button = new JButton(category);
+        for (EnumCategories enumCategories : listOfCategories) {
+            JButton button = new JButton(enumCategories.toString());
             button.setPreferredSize(new Dimension(200, 50));
             button.addActionListener(e -> {
-                handleCategorySelection(category); // Skicka kategorin till servern
-                Response questionResponse = protocol.receiveFromServer(); // Vänta på serverns svar
+                handleCategorySelection(enumCategories.getText());
+                Response questionResponse = protocol.receiveFromServer();
                 if (questionResponse != null && questionResponse.getType() == Response.QUESTION) {
                     showQuestionStage(questionResponse.getQuestionData());
                 }
