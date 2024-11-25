@@ -110,7 +110,7 @@ public class QuizPanel {
 
     // Visa feedback på svaret
     public void showFeedback(String feedback) {
-        if (feedback.equals("Wrong!")) {
+        if (feedback.equals("Wrong!")) { //TODO: change to boolean
             clickedButton.setForeground(Color.red);
         } else
             clickedButton.setForeground(Color.GREEN);
