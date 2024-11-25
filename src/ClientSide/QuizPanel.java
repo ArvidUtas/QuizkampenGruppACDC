@@ -23,6 +23,7 @@ public class QuizPanel {
     private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
+    private JScrollPane scrollPane;
 
     public QuizPanel(Socket socket, PrintWriter out, ObjectInputStream in) {
         this.socket = socket;
@@ -43,7 +44,14 @@ public class QuizPanel {
                 g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
             }
         };
-        frame.add(mainPanel);
+
+
+
+        scrollPane = new JScrollPane(mainPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
+        // frame.add(mainPanel);
         frame.setVisible(true);
     }
 
@@ -98,8 +106,12 @@ public class QuizPanel {
         mainPanel.add(questionLabel, BorderLayout.NORTH);
 
         JPanel answerPanel = new JPanel();
-        answerPanel.setLayout(new BoxLayout(answerPanel, BoxLayout.Y_AXIS));
+        answerPanel.setLayout(new GridLayout(2,2));
         answerPanel.setOpaque(false);
+
+        //Nytt
+
+        Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
         for (int i = 2; i < questionData.size(); i++) {
             JButton answerButton = new JButton(questionData.get(i), buttonIcon);
@@ -107,6 +119,12 @@ public class QuizPanel {
             answerButton.setBorderPainted(false);
             answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
             answerButton.setVerticalTextPosition(SwingConstants.CENTER);
+            answerButton.setFont(buttonFont);
+            answerButton.setFocusPainted(false);
+
+            // Den fungerar inte för mig -->
+
+            answerButton.setOpaque(false);
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
                 clickedButton = answerButton;
@@ -118,7 +136,7 @@ public class QuizPanel {
                 }
             });
             answerPanel.add(answerButton);
-            answerPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
+
         }
 
         mainPanel.add(answerPanel, BorderLayout.CENTER);
