@@ -32,6 +32,16 @@ public class Response implements Serializable {
         this.question = question;
         this.message = optionalMessage;
     }
+    public Response(int type, int currentRound, int player1score, int player2score,
+                    int p1RoundScore, int p2RoundScore, String optionalMessage) {
+        this.type = type;
+        this.currentRound = currentRound;
+        this.player1score = player1score;
+        this.player2score = player2score;
+        this.p1RoundScore = p1RoundScore;
+        this.p2RoundScore = p2RoundScore;
+        this.message = optionalMessage;
+    }
 
     public Response(int type, int currentRound, int p1RoundScore, int p2RoundScore) {
         this.type = type;

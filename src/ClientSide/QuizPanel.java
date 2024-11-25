@@ -153,16 +153,20 @@ public class QuizPanel {
         mainPanel.removeAll();
         JPanel centrePanel = new JPanel(new GridLayout(10, 1));
         mainPanel.add(centrePanel,BorderLayout.CENTER);
-        JLabel finalScoreLabel = new JLabel(response.getMessage() + "\t\t\tPlayer 1: "
+        JLabel finalScoreLabel1 = new JLabel(response.getMessage(), JLabel.CENTER);
+        JLabel finalScoreLabel2 = new JLabel("Player 1: "
                 + response.getPlayer1score() + "\t\t\t - \t\t\tPlayer 2: "
                 + response.getPlayer2score(), JLabel.CENTER);
-        finalScoreLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        centrePanel.add(finalScoreLabel, BorderLayout.CENTER);
+        finalScoreLabel1.setFont(new Font("Arial", Font.BOLD, 20));
+        finalScoreLabel2.setFont(new Font("Arial", Font.BOLD, 16));
+        centrePanel.add(finalScoreLabel1);
+        centrePanel.add(finalScoreLabel2);
+
         roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
                 + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
         for (String s : roundScoreList) {
             JLabel rScoreLabel = new JLabel(s, JLabel.CENTER);
-            centrePanel.add(rScoreLabel, BorderLayout.CENTER);
+            centrePanel.add(rScoreLabel);
         }
 
         JButton playAgainButton = new JButton("Play again");
