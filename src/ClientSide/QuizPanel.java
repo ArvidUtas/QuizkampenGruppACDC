@@ -9,13 +9,17 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import static java.lang.Thread.sleep;
 
 public class QuizPanel {
     private JFrame frame;
     private JPanel mainPanel;
     private JButton clickedButton;
+    private final String backgroundImagePath = "src/ClientSide/graphics/gradient.png";
+    private final String buttonImagePath = "src/ClientSide/graphics/button.png";
+    private ImageIcon buttonIcon = new ImageIcon(buttonImagePath);
+    private ImageIcon backgroundIcon = new ImageIcon(backgroundImagePath);
+    private Image background = backgroundIcon.getImage();
     private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
@@ -32,7 +36,13 @@ public class QuizPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
-        mainPanel = new JPanel(new BorderLayout());
+        mainPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
         frame.add(mainPanel);
         frame.setVisible(true);
     }
@@ -58,13 +68,17 @@ public class QuizPanel {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setOpaque(false);
 
         ArrayList<EnumCategories> listOfCategories = new ArrayList<>();
         Collections.addAll(listOfCategories, EnumCategories.values());
 
         for (EnumCategories enumCategories : listOfCategories) {
-            JButton button = new JButton(enumCategories.getText());
-            button.setPreferredSize(new Dimension(200, 50));
+            JButton button = new JButton(enumCategories.getText(), buttonIcon);
+            //button.setPreferredSize(new Dimension(200, 50));
+            button.setBorderPainted(false);
+            button.setHorizontalTextPosition(SwingConstants.CENTER);
+            button.setVerticalTextPosition(SwingConstants.CENTER);
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
             buttonPanel.add(button);
             buttonPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
@@ -85,10 +99,14 @@ public class QuizPanel {
 
         JPanel answerPanel = new JPanel();
         answerPanel.setLayout(new BoxLayout(answerPanel, BoxLayout.Y_AXIS));
+        answerPanel.setOpaque(false);
 
         for (int i = 2; i < questionData.size(); i++) {
-            JButton answerButton = new JButton(questionData.get(i));
-            answerButton.setPreferredSize(new Dimension(200, 50));
+            JButton answerButton = new JButton(questionData.get(i), buttonIcon);
+            //answerButton.setPreferredSize(new Dimension(200, 50));
+            answerButton.setBorderPainted(false);
+            answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            answerButton.setVerticalTextPosition(SwingConstants.CENTER);
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
                 clickedButton = answerButton;
