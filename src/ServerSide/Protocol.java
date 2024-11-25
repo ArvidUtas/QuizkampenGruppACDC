@@ -108,9 +108,8 @@ public class Protocol {
                 currentQ++;
                 if (currentQ > numQuestion) { //lägga till en ny state roundScore/roundEnd?
 
-                    Response roundScoreUpdate = new Response(Response.ROUND_SCORE, currentRound, currentQ,
-                            p1Score, p2Score, questions.get(currentQ - 1),
-                            "Round Score: Player 1: " + p1RoundScore + " Player 2: " + p2RoundScore);
+                    Response roundScoreUpdate = new Response(Response.ROUND_SCORE, currentRound,
+                            p1RoundScore, p2RoundScore);
                     sendToBothClients(roundScoreUpdate);
 
                     p1Score += p1RoundScore;

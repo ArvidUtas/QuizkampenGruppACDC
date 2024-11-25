@@ -10,8 +10,7 @@ public class Response implements Serializable {
     public final static int FINAL_SCORE = 3;
     public final static int MESSAGE = 4;
     public static final int ROUND_SCORE = 5;
-    public static final int ANSWER = 5;
-    public static final int OTHERPCATEGORY = 5;
+
     private int type;
 
     private int currentRound = 1;
@@ -34,6 +33,13 @@ public class Response implements Serializable {
         this.message = optionalMessage;
     }
 
+    public Response(int type, int currentRound, int p1RoundScore, int p2RoundScore) {
+        this.type = type;
+        this.currentRound = currentRound;
+        this.p1RoundScore = p1RoundScore;
+        this.p2RoundScore = p2RoundScore;
+    }
+
     public int getCurrentRound() {
         return currentRound;
     }
@@ -48,6 +54,14 @@ public class Response implements Serializable {
 
     public void setCurrentQ(int currentQ) {
         this.currentQ = currentQ;
+    }
+
+    public int getP1RoundScore() {
+        return p1RoundScore;
+    }
+
+    public int getP2RoundScore() {
+        return p2RoundScore;
     }
 
     public int getPlayer1score() {

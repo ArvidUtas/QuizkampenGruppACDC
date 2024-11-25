@@ -15,6 +15,7 @@ public class QuizPanel {
     private JPanel mainPanel;
     private Protocol protocol;
     private String chosenCat = "";
+    private ArrayList<String> roundScoreList = new ArrayList<>();
     private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
@@ -121,6 +122,28 @@ public class QuizPanel {
     // Visa feedback på svaret
     public void showFeedback(String feedback) {
         JOptionPane.showMessageDialog(frame, feedback);
+    }
+
+    public void showRoundScore(Response response) {
+        final String cont = "Continue";
+        mainPanel.removeAll();
+        JLabel label = new JLabel("Round " + response.getCurrentRound() + " score", JLabel.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 24));
+        label.setForeground(Color.BLACK);
+        JButton contButton = new JButton(cont);
+        contButton.addActionListener(e -> {
+            sendStringToServer(cont);
+        });
+        roundScoreList.add("Player 1: " + response.getP1RoundScore()
+                + "\tPlayer 2: " + response.getP2RoundScore());
+        for (String s : roundScoreList) {
+            JLabel rScoreLabel = new JLabel(s, JLabel.CENTER);
+            mainPanel.add(rScoreLabel, BorderLayout.CENTER);
+        }
+        mainPanel.add(label, BorderLayout.NORTH);
+        mainPanel.add(contButton, BorderLayout.SOUTH);
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     // Visa slutresultatet

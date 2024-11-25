@@ -29,7 +29,8 @@ public class Client {
                         quizPanel.showQuestionStage(response.getQuestionData());
                     } else if (response.getType() == Response.ANSWER_CHECK) {
                         quizPanel.showFeedback(response.getMessage());
-                        System.out.println(response.getMessage());
+                    } else if (response.getType() == Response.ROUND_SCORE) {
+                        quizPanel.showRoundScore(response);
                     } else if (response.getType() == Response.FINAL_SCORE) {
                         quizPanel.showFinalScore(response);
                     }
