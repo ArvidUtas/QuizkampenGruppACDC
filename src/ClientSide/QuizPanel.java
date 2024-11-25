@@ -10,11 +10,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static java.lang.Thread.sleep;
+
 public class QuizPanel {
     private JFrame frame;
     private JPanel mainPanel;
-    private Protocol protocol;
-    private String chosenCat = "";
+    private JButton clickedButton;
     private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
@@ -90,18 +91,13 @@ public class QuizPanel {
             answerButton.setPreferredSize(new Dimension(200, 50));
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
-//                handleAnswerSelection(answerButton.getText()); // Skicka svaret till servern
+                clickedButton = answerButton;
 
                 for (Component component : answerPanel.getComponents()) { //hindrar att man kan klicka på flera svar
-                    if (component instanceof JButton) {                   //eventuelt onödig
+                    if (component instanceof JButton && component != clickedButton) {
                         component.setEnabled(false);
                     }
                 }
-
-//                Response response = receiveFromServer(); // Vänta på feedback
-//                if (response != null && response.getType() == Response.ANSWER_CHECK) {
-//                    showFeedback(response.getMessage()); // Visa feedback
-//                }
             });
             answerPanel.add(answerButton);
             answerPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
@@ -112,15 +108,17 @@ public class QuizPanel {
         mainPanel.repaint();
     }
 
-//    // Hantera svaret
-//    private void handleAnswerSelection(String answer) {
-//        Response answerResponse = new Response(Response.ANSWER, 0, 0, 0, 0, null, answer);
-//        protocol.sendToServer(answerResponse); // Skicka svaret till servern
-//    }
-
     // Visa feedback på svaret
     public void showFeedback(String feedback) {
-        JOptionPane.showMessageDialog(frame, feedback);
+        if (feedback.equals("Wrong!")) {
+            clickedButton.setForeground(Color.red);
+        } else
+            clickedButton.setForeground(Color.GREEN);
+        try {
+            sleep(700);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     // Visa slutresultatet
