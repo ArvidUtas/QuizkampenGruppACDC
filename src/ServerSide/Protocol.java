@@ -7,8 +7,9 @@ public class Protocol {
     private final int CATEGORY = 0;
     private final int QUESTION = 1;
     private final int ANSWER = 2;
-    private final int FINAL_SCORE = 3;
-    private final int PLAY_AGAIN = 4;
+    private final int ROUND_SCORE = 3;
+    private final int FINAL_SCORE = 4;
+    private final int PLAY_AGAIN = 5;
 
     private int numQuestion;
     private int numRounds;
@@ -44,12 +45,14 @@ public class Protocol {
                     throw new IllegalStateException("No questions found");
                 }
                 state = QUESTION;
-            } else if (state == QUESTION) {
+            }
+            else if (state == QUESTION) {
                 Response qNAs = new Response(Response.QUESTION, currentRound, currentQ,
                         p1Score, p2Score, questions.get(currentQ - 1), null);
                 sendToBothClients(qNAs);
                 state = ANSWER;
-            } else if (state == ANSWER) {
+            }
+            else if (state == ANSWER) {
 
                 /** Skapar trådar för spelarna.
                  * Nu kan t ex player2 skicka in sitt svarsalternativ och få svar på om det var rätt/fel samt få sin poäng
@@ -104,34 +107,37 @@ public class Protocol {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
                 currentQ++;
-                if (currentQ > numQuestion) { //lägga till en ny state roundScore/roundEnd?
 
-                    Response roundScoreUpdate = new Response(Response.ROUND_SCORE, currentRound,
-                            p1RoundScore, p2RoundScore);
-                    sendToBothClients(roundScoreUpdate);
-
-                    p1Score += p1RoundScore;
-                    p2Score += p2RoundScore;
-
-                    p1RoundScore = 0;
-                    p2RoundScore = 0;
-
-                    currentRound++;
-                }
-
-                if (currentQ <= numQuestion)
+                if (currentQ > numQuestion && currentRound < numRounds) {
+                    state = ROUND_SCORE;
+                } else if (currentQ <= numQuestion) {
                     state = QUESTION;
-                else if (currentQ > numQuestion && currentRound <= numRounds) {
+                } else
+                    state = FINAL_SCORE;
+            }
+            else if (state == ROUND_SCORE) {
+                Response roundScoreUpdate = new Response(Response.ROUND_SCORE, currentRound,
+                        p1RoundScore, p2RoundScore);
+                sendToBothClients(roundScoreUpdate);
 
+                String p1cont = player1.receieveFromClient(); //Todo: fix waiting issue
+                String p2cont = player2.receieveFromClient();
+
+                p1Score += p1RoundScore;
+                p2Score += p2RoundScore;
+
+                p1RoundScore = 0;
+                p2RoundScore = 0;
+
+                currentRound++;
+                if (currentRound <= numRounds) {
                     state = CATEGORY;
                     currentQ = 1;
                     currentPlayer = currentPlayer.getOpponent();
-
-                } else
-                    state = FINAL_SCORE;
-            } else if (state == FINAL_SCORE) {
+                }
+            }
+            else if (state == FINAL_SCORE) {
                 if (p1Score > p2Score) {
                     player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound, currentQ,
                             p1Score, p2Score, questions.get(currentQ - 1), "Victory!"));

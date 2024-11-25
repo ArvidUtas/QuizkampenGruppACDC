@@ -127,6 +127,8 @@ public class QuizPanel {
     public void showRoundScore(Response response) {
         final String cont = "Continue";
         mainPanel.removeAll();
+        JPanel centrePanel = new JPanel(new GridLayout(10, 1));
+        mainPanel.add(centrePanel,BorderLayout.CENTER);
         JLabel label = new JLabel("Round " + response.getCurrentRound() + " score", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         label.setForeground(Color.BLACK);
@@ -134,11 +136,11 @@ public class QuizPanel {
         contButton.addActionListener(e -> {
             sendStringToServer(cont);
         });
-        roundScoreList.add("Player 1: " + response.getP1RoundScore()
-                + "\tPlayer 2: " + response.getP2RoundScore());
+        roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
+                + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
         for (String s : roundScoreList) {
             JLabel rScoreLabel = new JLabel(s, JLabel.CENTER);
-            mainPanel.add(rScoreLabel, BorderLayout.CENTER);
+            centrePanel.add(rScoreLabel, BorderLayout.CENTER);
         }
         mainPanel.add(label, BorderLayout.NORTH);
         mainPanel.add(contButton, BorderLayout.SOUTH);
@@ -149,12 +151,19 @@ public class QuizPanel {
     // Visa slutresultatet
     public void showFinalScore(Response response) {
         mainPanel.removeAll();
-
-        JLabel finalScoreLabel = new JLabel("<html>" + response.getMessage() + "<br>Player 1: "
-                + response.getPlayer1score() + " - Player 2: "
-                + response.getPlayer2score() + "</html>", JLabel.CENTER);
-        finalScoreLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        mainPanel.add(finalScoreLabel, BorderLayout.CENTER);
+        JPanel centrePanel = new JPanel(new GridLayout(10, 1));
+        mainPanel.add(centrePanel,BorderLayout.CENTER);
+        JLabel finalScoreLabel = new JLabel(response.getMessage() + "\t\t\tPlayer 1: "
+                + response.getPlayer1score() + "\t\t\t - \t\t\tPlayer 2: "
+                + response.getPlayer2score(), JLabel.CENTER);
+        finalScoreLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        centrePanel.add(finalScoreLabel, BorderLayout.CENTER);
+        roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
+                + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
+        for (String s : roundScoreList) {
+            JLabel rScoreLabel = new JLabel(s, JLabel.CENTER);
+            centrePanel.add(rScoreLabel, BorderLayout.CENTER);
+        }
 
         JButton playAgainButton = new JButton("Play again");
         playAgainButton.addActionListener(e -> showCategorySelection());
