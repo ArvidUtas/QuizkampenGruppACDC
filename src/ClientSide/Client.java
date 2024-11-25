@@ -19,6 +19,7 @@ public class Client {
 
             while (true) {
                 obj = in.readObject();
+                System.out.println(obj);
                 if (obj instanceof Response response) {
                     if (response.getType() == Response.MESSAGE) {
                         quizPanel.messageFrame(response.getMessage());

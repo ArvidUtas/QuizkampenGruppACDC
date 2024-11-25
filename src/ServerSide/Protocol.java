@@ -17,6 +17,8 @@ public class Protocol {
     private int currentQ = 1;
     private int p1Score = 0;
     private int p2Score = 0;
+    private int p1RoundScore = 0;
+    private int p2RoundScore = 0;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -33,8 +35,7 @@ public class Protocol {
 
         while (true) {
             if (state == CATEGORY) {
-                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE, currentRound, currentQ, p1Score, p2Score,
-                        null, "Wait for other player to choose category"));
+                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE, currentRound, currentQ, p1Score, p2Score,null,"Wait for other player to choose category"));
                 currentPlayer.sendToClient(new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category"));
                 String chosenCategory = currentPlayer.receieveFromClient();
@@ -60,7 +61,7 @@ public class Protocol {
                         String corrOrWro;
                         synchronized (this) {
                             if (questions.get(currentQ - 1).get(1).equals(player1Answer)) {
-                                p1Score++;
+                                p1RoundScore++; //
                                 corrOrWro = "Correct!";
                             } else {
                                 corrOrWro = "Wrong!";
@@ -80,7 +81,7 @@ public class Protocol {
                         String corrOrWro;
                         synchronized (this) {
                             if (questions.get(currentQ - 1).get(1).equals(player2Answer)) {
-                                p2Score++;
+                                p2RoundScore++; //
                                 corrOrWro = "Correct!";
                             } else {
                                 corrOrWro = "Wrong!";
@@ -105,12 +106,26 @@ public class Protocol {
                 }
 
                 currentQ++;
-                if (currentQ > numQuestion)
+                if (currentQ > numQuestion) { //lägga till en ny state roundScore/roundEnd?
+
+                    Response roundScoreUpdate = new Response(Response.ROUND_SCORE, currentRound, currentQ,
+                            p1Score, p2Score, questions.get(currentQ - 1),
+                            "Round Score: Player 1: " + p1RoundScore + " Player 2: " + p2RoundScore);
+                    sendToBothClients(roundScoreUpdate);
+
+                    p1Score += p1RoundScore;
+                    p2Score += p2RoundScore;
+
+                    p1RoundScore = 0;
+                    p2RoundScore = 0;
+
                     currentRound++;
+                }
 
                 if (currentQ <= numQuestion)
                     state = QUESTION;
                 else if (currentQ > numQuestion && currentRound <= numRounds) {
+
                     state = CATEGORY;
                     currentQ = 1;
                     currentPlayer = currentPlayer.getOpponent();

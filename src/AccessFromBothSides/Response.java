@@ -9,6 +9,7 @@ public class Response implements Serializable {
     public final static int ANSWER_CHECK = 2;
     public final static int FINAL_SCORE = 3;
     public final static int MESSAGE = 4;
+    public static final int ROUND_SCORE = 5;
     public static final int ANSWER = 5;
     public static final int OTHERPCATEGORY = 5;
     private int type;
@@ -17,6 +18,8 @@ public class Response implements Serializable {
     private int currentQ = 1;
     private int player1score = 0;
     private int player2score = 0;
+    private int p1RoundScore = 0;
+    private int p2RoundScore = 0;
     private ArrayList<String> question;
     private String message;
 
@@ -99,7 +102,8 @@ public class Response implements Serializable {
                 ", player1score=" + player1score +
                 ", player2score=" + player2score +
                 ", question=" + question +
-                ", message='" + message + '\'' +
+                ", message='" + message +
+                ", roundScore=" + ROUND_SCORE + '\'' +
                 '}';
     }
 
