@@ -25,6 +25,7 @@ public class QuizPanel {
     private PrintWriter out;
     private JScrollPane scrollPane;
 
+    // Konstruktor för nätverk + gui
     public QuizPanel(Socket socket, PrintWriter out, ObjectInputStream in) {
         this.socket = socket;
         this.out = out;
@@ -39,14 +40,14 @@ public class QuizPanel {
         frame.setLocationRelativeTo(null);
         mainPanel = new JPanel(new BorderLayout()) {
             @Override
-            protected void paintComponent(Graphics g) {
+            protected void paintComponent(Graphics g) { // Anpassad bakgrundsbild
                 super.paintComponent(g);
                 g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
             }
         };
 
 
-
+        // Scroll
         scrollPane = new JScrollPane(mainPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         frame.add(scrollPane, BorderLayout.CENTER);
@@ -120,11 +121,11 @@ public class QuizPanel {
             answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
             answerButton.setVerticalTextPosition(SwingConstants.CENTER);
             answerButton.setFont(buttonFont);
-            answerButton.setFocusPainted(false);
+            answerButton.setFocusPainted(true);
 
             // Den fungerar inte för mig -->
-
             answerButton.setOpaque(false);
+
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
                 clickedButton = answerButton;
