@@ -91,7 +91,6 @@ public class QuizPanel {
             button.setVerticalTextPosition(SwingConstants.CENTER);
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
             buttonPanel.add(button);
-            buttonPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
         }
 
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
