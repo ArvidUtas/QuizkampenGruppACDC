@@ -86,6 +86,7 @@ public class QuizPanel {
             JButton button = new JButton(enumCategories.getText(), buttonIcon);
             //button.setPreferredSize(new Dimension(200, 50));
             button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
             button.setVerticalTextPosition(SwingConstants.CENTER);
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
@@ -118,6 +119,7 @@ public class QuizPanel {
             JButton answerButton = new JButton(questionData.get(i), buttonIcon);
             //answerButton.setPreferredSize(new Dimension(200, 50));
             answerButton.setBorderPainted(false);
+            answerButton.setContentAreaFilled(false);
             answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
             answerButton.setVerticalTextPosition(SwingConstants.CENTER);
             answerButton.setFont(buttonFont);
