@@ -23,6 +23,7 @@ public class QuizPanel {
     private ImageIcon backgroundIcon = new ImageIcon(backgroundImagePath);
     private Image background = backgroundIcon.getImage();
     private ArrayList<String> roundScoreList = new ArrayList<>();
+    private Font buttonFont = new Font("Arial", Font.PLAIN, 16);
     private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
@@ -49,11 +50,9 @@ public class QuizPanel {
             }
         };
 
-        // Scroll
         scrollPane = new JScrollPane(mainPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         frame.add(scrollPane, BorderLayout.CENTER);
-
         frame.setVisible(true);
     }
 
@@ -62,8 +61,8 @@ public class QuizPanel {
         mainPanel.removeAll();
         JLabel label = new JLabel("<html><div style='width:400px;'>" + message + "</div></html>", JLabel.CENTER);
         label.setFont(new Font("Montserrat", Font.PLAIN, 24));
-        label.setForeground(Color.GRAY);
-        mainPanel.add(label, BorderLayout.NORTH);
+        label.setForeground(Color.DARK_GRAY);
+        mainPanel.add(label, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
@@ -90,6 +89,7 @@ public class QuizPanel {
             button.setHorizontalTextPosition(SwingConstants.CENTER); // Får plats i rutan
             button.setVerticalTextPosition(SwingConstants.CENTER); // Får plats i rutan
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
+            button.setFont(buttonFont);
             buttonPanel.add(button);
         }
 
@@ -109,8 +109,6 @@ public class QuizPanel {
         JPanel answerPanel = new JPanel();
         answerPanel.setLayout(new GridLayout(2,2));
         answerPanel.setOpaque(false);
-
-        Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
         for (int i = 2; i < questionData.size(); i++) {
             JButton answerButton = new JButton(questionData.get(i), buttonIcon);
@@ -162,25 +160,23 @@ public class QuizPanel {
         JLabel label = new JLabel("Round " + response.getCurrentRound() + " score", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         label.setForeground(Color.BLACK);
-        JLabel waiting = new JLabel("");
+        JLabel waiting = new JLabel("Waiting for other player", JLabel.CENTER);
         JButton contButton = new JButton(cont);
         contButton.addActionListener(e -> {
-            boolean[] isFirstPlayer = {true};
             sendStringToServer(cont);
-            if(isFirstPlayer[0]) {
-                waiting.setText("Waiting for other player");
-                isFirstPlayer[0] = false;
-            }
+            mainPanel.add(waiting, BorderLayout.CENTER);
+            mainPanel.revalidate();
+            mainPanel.repaint();
         });
         roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
                 + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
         for (String s : roundScoreList) {
             JLabel rScoreLabel = new JLabel(s, JLabel.CENTER);
+            rScoreLabel.setFont(new Font("Arial", Font.PLAIN, 18));
             centrePanel.add(rScoreLabel, BorderLayout.CENTER);
         }
         mainPanel.add(label, BorderLayout.NORTH);
         mainPanel.add(contButton, BorderLayout.SOUTH);
-        //mainPanel.add(waiting, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
@@ -207,7 +203,6 @@ public class QuizPanel {
             JLabel rScoreLabel = new JLabel(s, JLabel.CENTER);
             centrePanel.add(rScoreLabel);
         }
-
         JButton playAgainButton = new JButton("Play again");
         JButton exitButton = new JButton("Exit");
         playAgainButton.addActionListener(e -> Client.replayable = true);
@@ -229,15 +224,15 @@ public class QuizPanel {
             e.printStackTrace();
         }
     }
-//
-//    // Stäng anslutningen
-//    public void closeConnection() {
-//        try {
-//            in.close();
-//            out.close();
-//            socket.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+
+    // Stäng anslutningen
+    public void closeConnection() {
+        try {
+            in.close();
+            out.close();
+            socket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

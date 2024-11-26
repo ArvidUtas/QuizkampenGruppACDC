@@ -30,11 +30,6 @@ public class Game extends Thread {
 
         Protocol protocol = new Protocol(numQuestion, numRounds, player1, player2);
     }
-
-    public void sendStringToBothClients(String message) {
-        player1.sendStringToClient(message);
-        player2.sendStringToClient(message);
-    }
 }
 
 

@@ -124,7 +124,7 @@ public class Protocol {
                         p1RoundScore, p2RoundScore);
                 sendToBothClients(roundScoreUpdate);
 
-                String p1cont = player1.receieveFromClient(); //Todo: fix waiting issue
+                String p1cont = player1.receieveFromClient();
                 String p2cont = player2.receieveFromClient();
 
                 p1Score += p1RoundScore;
@@ -155,7 +155,7 @@ public class Protocol {
                     sendToBothClients(new Response(Response.FINAL_SCORE, currentRound,
                             p1Score, p2Score, p1RoundScore, p2RoundScore, "Draw."));
                 }
-                break;
+            break;
             }
         }
     }

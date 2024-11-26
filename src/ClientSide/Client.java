@@ -36,6 +36,7 @@ public class Client {
                                 quizPanel.showRoundScore(response);
                             } else if (response.getType() == Response.FINAL_SCORE) {
                                 quizPanel.showFinalScore(response);
+                                break;
                             }
                         }
                     }
@@ -46,6 +47,7 @@ public class Client {
                 }
             }
         }
+
     public static void main(String[] args) {
         Client client = new Client();
     }
