@@ -61,8 +61,8 @@ public class QuizPanel {
     public void messageFrame(String message) {
         mainPanel.removeAll();
         JLabel label = new JLabel("<html><div style='width:400px;'>" + message + "</div></html>", JLabel.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        label.setForeground(Color.BLACK);
+        label.setFont(new Font("Montserrat", Font.PLAIN, 24));
+        label.setForeground(Color.GRAY);
         mainPanel.add(label, BorderLayout.NORTH);
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -71,9 +71,9 @@ public class QuizPanel {
     public void showCategorySelection() {
         mainPanel.removeAll();
 
-        JLabel label = new JLabel("Välj en kategori", JLabel.CENTER);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        label.setForeground(Color.BLACK);
+        JLabel label = new JLabel("Choose a category", JLabel.CENTER);
+        label.setFont(new Font("Montserrat", Font.PLAIN, 24));
+        label.setForeground(Color.DARK_GRAY);
         mainPanel.add(label, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
@@ -85,10 +85,10 @@ public class QuizPanel {
 
         for (EnumCategories enumCategories : listOfCategories) {
             JButton button = new JButton(enumCategories.getText(), buttonIcon);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(false);
-            button.setHorizontalTextPosition(SwingConstants.CENTER);
-            button.setVerticalTextPosition(SwingConstants.CENTER);
+            button.setBorderPainted(false); // Kanterna syns inte
+            button.setContentAreaFilled(false); // Transparent
+            button.setHorizontalTextPosition(SwingConstants.CENTER); // Får plats i rutan
+            button.setVerticalTextPosition(SwingConstants.CENTER); // Får plats i rutan
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
             buttonPanel.add(button);
         }
