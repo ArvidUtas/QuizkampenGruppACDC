@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class Game extends Thread {
-    Player player1;
-    Player player2;
+    private Player player1;
+    private Player player2;
     private int numQuestion;
     private int numRounds;
-    Properties p = new Properties();
+    private Properties p = new Properties();
 
     public Game(Player player1, Player player2) {
         try {
@@ -26,8 +26,6 @@ public class Game extends Thread {
     }
 
     public void run() {
-        player2.sendStringToClient("Welcome Player 2");
-
         Protocol protocol = new Protocol(numQuestion, numRounds, player1, player2);
     }
 }

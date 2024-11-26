@@ -20,6 +20,7 @@ public class Response implements Serializable {
     private int player2score = 0;
     private int p1RoundScore = 0;
     private int p2RoundScore = 0;
+    private boolean correctAnswer;
     private ArrayList<String> question;
     private String message;
 
@@ -56,20 +57,13 @@ public class Response implements Serializable {
         this.message = message;
     }
 
+    public Response(int type, boolean correctAnswer) {
+        this.type = type;
+        this.correctAnswer = correctAnswer;
+    }
+
     public int getCurrentRound() {
         return currentRound;
-    }
-
-    public void setCurrentRound(int currentRound) {
-        this.currentRound = currentRound;
-    }
-
-    public int getCurrentQ() {
-        return currentQ;
-    }
-
-    public void setCurrentQ(int currentQ) {
-        this.currentQ = currentQ;
     }
 
     public int getP1RoundScore() {
@@ -84,45 +78,23 @@ public class Response implements Serializable {
         return player1score;
     }
 
-    public void setPlayer1score(int player1score) {
-        this.player1score = player1score;
-    }
-
     public int getPlayer2score() {
         return player2score;
-    }
-
-    public void setPlayer2score(int player2score) {
-        this.player2score = player2score;
-    }
-
-    public ArrayList<String> getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(ArrayList<String> question) {
-        this.question = question;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String optionalMessage) {
-        this.message = optionalMessage;
-    }
-
     public int getType() {
         return type;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public boolean isCorrectAnswer() {
+        return correctAnswer;
     }
 
-    /**
-     * En toString metod bara föra att kunna se i consolen att t ex poängen mm. uppdateras.
-     */
+    //En toString metod bara föra att kunna se i consolen att t ex poängen mm. uppdateras.
     @Override
     public String toString() {
         return "Response{" +

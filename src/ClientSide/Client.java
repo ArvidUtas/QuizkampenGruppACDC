@@ -8,7 +8,6 @@ public class Client {
         public static boolean replayable = false;
 
         public Client() {
-
             String hostName = "localhost";
             int portNumber = 23456;
 
@@ -22,7 +21,6 @@ public class Client {
 
                     while (true) {
                         obj = in.readObject();
-                        System.out.println(obj);
                         if (obj instanceof Response response) {
                             if (response.getType() == Response.MESSAGE) {
                                 quizPanel.messageFrame(response.getMessage());
@@ -31,13 +29,12 @@ public class Client {
                             } else if (response.getType() == Response.QUESTION) {
                                 quizPanel.showQuestionStage(response.getQuestionData());
                             } else if (response.getType() == Response.ANSWER_CHECK) {
-                                quizPanel.showFeedback(response.getMessage());
+                                quizPanel.showFeedback(response);
                             } else if (response.getType() == Response.ROUND_SCORE) {
                                 quizPanel.showRoundScore(response);
                             } else if (response.getType() == Response.FINAL_SCORE) {
                                 quizPanel.showFinalScore(response);
                             } else if (response.getType() == Response.PLAY_AGAIN) {
-                                quizPanel.closeConnection();
                                 quizPanel.closeMainPanel();
                                 break;
                             }
@@ -49,8 +46,8 @@ public class Client {
                     System.err.println("Incorrect class cast.");
                 }
             } while (replayable);
-            System.out.println("sist");
         }
+
 
     public static void main(String[] args) {
         Client client = new Client();

@@ -27,7 +27,8 @@ public class QuizPanel {
     private Image background = backgroundIcon.getImage();
     private ArrayList<String> roundScoreList = new ArrayList<>();
     private Font buttonFont = new Font("Arial", Font.PLAIN, 16);
-    private Socket socket;
+    private Font headerFont = new Font("Montserrat", Font.PLAIN, 24);
+        private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
     private JScrollPane scrollPane;
@@ -48,14 +49,8 @@ public class QuizPanel {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                try {
-                    if (!socket.isClosed()) {
-                        in.close();
-                        out.close();
-                        socket.close();
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+                if (!socket.isClosed()) {
+                    closeConnection();
                 }
                 System.exit(0);
             }
@@ -78,7 +73,7 @@ public class QuizPanel {
     public void messageFrame(String message) {
         mainPanel.removeAll();
         JLabel label = new JLabel("<html><div style='width:400px;'>" + message + "</div></html>", JLabel.CENTER);
-        label.setFont(new Font("Montserrat", Font.PLAIN, 24));
+        label.setFont(headerFont);
         label.setForeground(Color.DARK_GRAY);
         mainPanel.add(label, BorderLayout.CENTER);
         mainPanel.revalidate();
@@ -88,8 +83,8 @@ public class QuizPanel {
     public void showCategorySelection() {
         mainPanel.removeAll();
 
-        JLabel label = new JLabel("Choose a category", JLabel.CENTER);
-        label.setFont(new Font("Montserrat", Font.PLAIN, 24));
+        JLabel label = new JLabel("Choose your category", JLabel.CENTER);
+        label.setFont(headerFont);
         label.setForeground(Color.DARK_GRAY);
         mainPanel.add(label, BorderLayout.NORTH);
 
@@ -137,11 +132,9 @@ public class QuizPanel {
             answerButton.setVerticalTextPosition(SwingConstants.CENTER);
             answerButton.setFont(buttonFont);
             answerButton.setFocusPainted(false);
-
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
                 clickedButton = answerButton;
-
                 for (Component component : answerPanel.getComponents()) { //hindrar att man kan klicka på flera svar
                     if (component instanceof JButton && component != clickedButton) {
                         component.setEnabled(false);
@@ -150,15 +143,14 @@ public class QuizPanel {
             });
             answerPanel.add(answerButton);
         }
-
         mainPanel.add(answerPanel, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
 
     // Visa feedback på svaret
-    public void showFeedback(String feedback) {
-        if (feedback.equals("Wrong!")) { //TODO: change to boolean
+    public void showFeedback(Response feedback) {
+        if (!feedback.isCorrectAnswer()) {
             clickedButton.setForeground(Color.red);
         } else
             clickedButton.setIcon(buttonGreenIcon);
@@ -179,7 +171,7 @@ public class QuizPanel {
         label.setFont(new Font("Arial", Font.BOLD, 24));
         label.setForeground(Color.BLACK);
         JLabel waiting = new JLabel("Waiting for other player", JLabel.CENTER);
-        waiting.setFont(buttonFont);
+        waiting.setFont(headerFont);
         JButton contButton = new JButton(cont);
         contButton.addActionListener(e -> {
             sendStringToServer(cont);
@@ -227,9 +219,7 @@ public class QuizPanel {
         JButton exitButton = new JButton("Exit");
         playAgainButton.addActionListener(e -> {
                     Client.replayable = true;
-
                     sendStringToServer(playAgain);
-
                 });
         exitButton.addActionListener(e -> {
             closeConnection();
@@ -246,8 +236,13 @@ public class QuizPanel {
 
     public void sendStringToServer(String message) {
         try {
-            out.println(message);
-            out.flush();
+            if (!socket.isClosed() && socket.isConnected()) {
+                out.println(message);
+                out.flush();
+            } else {
+                System.err.println("Socket disconnected.");
+                closeConnection();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -256,14 +251,16 @@ public class QuizPanel {
     public void closeMainPanel(){
         frame.dispose();
     }
-    // Stäng anslutningen
+
     public void closeConnection() {
         try {
-            in.close();
+            out.println("DISCONNECT");
+            out.flush();
             out.close();
+            in.close();
             socket.close();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            System.err.println("Error closing socket or in/out streams: " + e.getMessage());
         }
     }
 }
