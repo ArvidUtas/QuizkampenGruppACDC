@@ -5,17 +5,20 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client {
-    public Client() {
+        public static boolean replayable = true;
+
+        public Client() {
 
         String hostName = "localhost";
         int portNumber = 23456;
 
-        try {
-            Socket socket = new Socket(hostName, portNumber);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-            QuizPanel quizPanel = new QuizPanel(socket, out, in);
-            Object obj;
+        while (replayable) {
+            try {
+                Socket socket = new Socket(hostName, portNumber);
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                QuizPanel quizPanel = new QuizPanel(socket, out, in);
+                Object obj;
 
             while (true) {
                 obj = in.readObject();
@@ -42,7 +45,7 @@ public class Client {
             throw new RuntimeException(e);
         }
     }
-
+}
     public static void main(String[] args) {
         Client client = new Client();
     }

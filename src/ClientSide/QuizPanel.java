@@ -9,17 +9,26 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import static java.lang.Thread.sleep;
 
 public class QuizPanel {
     private JFrame frame;
     private JPanel mainPanel;
-    private Protocol protocol;
-    private String chosenCat = "";
+    private JButton clickedButton;
+    private final String backgroundImagePath = "src/ClientSide/graphics/gradient.png";
+    private final String buttonImagePath = "src/ClientSide/graphics/button.png";
+    private final String buttonGreenImagePath = "src/ClientSide/graphics/buttonGreen.png";
+    private ImageIcon buttonIcon = new ImageIcon(buttonImagePath);
+    private ImageIcon buttonGreenIcon = new ImageIcon(buttonGreenImagePath);
+    private ImageIcon backgroundIcon = new ImageIcon(backgroundImagePath);
+    private Image background = backgroundIcon.getImage();
     private ArrayList<String> roundScoreList = new ArrayList<>();
     private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
+    private JScrollPane scrollPane;
 
+    // Konstruktor för nätverk + gui
     public QuizPanel(Socket socket, PrintWriter out, ObjectInputStream in) {
         this.socket = socket;
         this.out = out;
@@ -32,8 +41,19 @@ public class QuizPanel {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
-        mainPanel = new JPanel(new BorderLayout());
-        frame.add(mainPanel);
+        mainPanel = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) { // Anpassad bakgrundsbild
+                super.paintComponent(g);
+                g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+
+        // Scroll
+        scrollPane = new JScrollPane(mainPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        frame.add(scrollPane, BorderLayout.CENTER);
+
         frame.setVisible(true);
     }
 
@@ -58,13 +78,17 @@ public class QuizPanel {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setOpaque(false);
 
         ArrayList<EnumCategories> listOfCategories = new ArrayList<>();
         Collections.addAll(listOfCategories, EnumCategories.values());
 
         for (EnumCategories enumCategories : listOfCategories) {
-            JButton button = new JButton(enumCategories.getText());
-            button.setPreferredSize(new Dimension(200, 50));
+            JButton button = new JButton(enumCategories.getText(), buttonIcon);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
+            button.setHorizontalTextPosition(SwingConstants.CENTER);
+            button.setVerticalTextPosition(SwingConstants.CENTER);
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
             buttonPanel.add(button);
             buttonPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
@@ -84,28 +108,32 @@ public class QuizPanel {
         mainPanel.add(questionLabel, BorderLayout.NORTH);
 
         JPanel answerPanel = new JPanel();
-        answerPanel.setLayout(new BoxLayout(answerPanel, BoxLayout.Y_AXIS));
+        answerPanel.setLayout(new GridLayout(2,2));
+        answerPanel.setOpaque(false);
+
+        Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
         for (int i = 2; i < questionData.size(); i++) {
-            JButton answerButton = new JButton(questionData.get(i));
-            answerButton.setPreferredSize(new Dimension(200, 50));
+            JButton answerButton = new JButton(questionData.get(i), buttonIcon);
+            answerButton.setBorderPainted(false);
+            answerButton.setContentAreaFilled(false);
+            answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
+            answerButton.setVerticalTextPosition(SwingConstants.CENTER);
+            answerButton.setFont(buttonFont);
+            answerButton.setFocusPainted(true);
+
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
-//                handleAnswerSelection(answerButton.getText()); // Skicka svaret till servern
+                clickedButton = answerButton;
 
                 for (Component component : answerPanel.getComponents()) { //hindrar att man kan klicka på flera svar
-                    if (component instanceof JButton) {                   //eventuelt onödig
+                    if (component instanceof JButton && component != clickedButton) {
                         component.setEnabled(false);
                     }
                 }
-
-//                Response response = receiveFromServer(); // Vänta på feedback
-//                if (response != null && response.getType() == Response.ANSWER_CHECK) {
-//                    showFeedback(response.getMessage()); // Visa feedback
-//                }
             });
             answerPanel.add(answerButton);
-            answerPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Mellanrum
+
         }
 
         mainPanel.add(answerPanel, BorderLayout.CENTER);
@@ -113,15 +141,17 @@ public class QuizPanel {
         mainPanel.repaint();
     }
 
-//    // Hantera svaret
-//    private void handleAnswerSelection(String answer) {
-//        Response answerResponse = new Response(Response.ANSWER, 0, 0, 0, 0, null, answer);
-//        protocol.sendToServer(answerResponse); // Skicka svaret till servern
-//    }
-
     // Visa feedback på svaret
     public void showFeedback(String feedback) {
-        JOptionPane.showMessageDialog(frame, feedback);
+        if (feedback.equals("Wrong!")) { //TODO: change to boolean
+            clickedButton.setForeground(Color.red);
+        } else
+            clickedButton.setIcon(buttonGreenIcon);
+        try {
+            sleep(700);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void showRoundScore(Response response) {
@@ -169,6 +199,7 @@ public class QuizPanel {
         finalScoreLabel2.setFont(new Font("Arial", Font.BOLD, 16));
         centrePanel.add(finalScoreLabel1);
         centrePanel.add(finalScoreLabel2);
+        JPanel southPanel = new JPanel(new GridLayout(1,2));
 
         roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
                 + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
@@ -178,8 +209,13 @@ public class QuizPanel {
         }
 
         JButton playAgainButton = new JButton("Play again");
-        playAgainButton.addActionListener(e -> showCategorySelection());
-        mainPanel.add(playAgainButton, BorderLayout.SOUTH);
+        JButton exitButton = new JButton("Exit");
+        playAgainButton.addActionListener(e -> Client.replayable = true);
+        exitButton.addActionListener(e -> System.exit(0));
+        mainPanel.add(southPanel, BorderLayout.SOUTH);
+        southPanel.setOpaque(false);
+        southPanel.add(playAgainButton);
+        southPanel.add(exitButton);
 
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -193,26 +229,6 @@ public class QuizPanel {
             e.printStackTrace();
         }
     }
-
-//    // Skicka data till servern
-//    public void sendToServer(Response response) {
-//        try {
-//            out.writeObject(response);
-//            out.flush();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    // Hämta data från servern
-//    public Response receiveFromServer() {
-//        try {
-//            return (Response) in.readObject();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 //
 //    // Stäng anslutningen
 //    public void closeConnection() {
