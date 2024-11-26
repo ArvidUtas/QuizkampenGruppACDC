@@ -36,7 +36,8 @@ public class Protocol {
 
         while (true) {
             if (state == CATEGORY) {
-                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE, currentRound, currentQ, p1Score, p2Score,null,"Wait for other player to choose category"));
+                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE,
+                        "Wait for other player to choose category"));
                 currentPlayer.sendToClient(new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category"));
                 String chosenCategory = currentPlayer.receieveFromClient();
@@ -155,7 +156,46 @@ public class Protocol {
                     sendToBothClients(new Response(Response.FINAL_SCORE, currentRound,
                             p1Score, p2Score, p1RoundScore, p2RoundScore, "Draw."));
                 }
-            break;
+                state = PLAY_AGAIN;
+            }
+            else if (state == PLAY_AGAIN) {
+                Thread player1Thread = new Thread(() -> {
+                    try {
+                        String player1Answer = player1.receieveFromClient();
+                        synchronized (this) {
+                            if (player1Answer.equals("Yes")){
+                                Response playAgain = new Response(Response.PLAY_AGAIN, null);
+                                player1.sendToClient(playAgain);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                Thread player2Thread = new Thread(() -> {
+                    try {
+                        String player2Answer = player2.receieveFromClient();
+                        synchronized (this) {
+                            if (player2Answer.equals("Again")) {
+                                Response playAgain = new Response(Response.PLAY_AGAIN, null);
+                                player2.sendToClient(playAgain);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                player1Thread.start();
+                player2Thread.start();
+
+                try {
+                    player1Thread.join();
+                    player2Thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

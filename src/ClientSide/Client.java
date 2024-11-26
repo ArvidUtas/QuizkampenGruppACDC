@@ -5,18 +5,18 @@ import java.io.*;
 import java.net.Socket;
 
 public class Client {
-        public static boolean replayable = true;
+        public static boolean replayable = false;
 
         public Client() {
 
             String hostName = "localhost";
             int portNumber = 23456;
 
-            while (replayable) {
-                try {
-                    Socket socket = new Socket(hostName, portNumber);
+            do {
+                try (Socket socket = new Socket(hostName, portNumber);
                     PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+                    ObjectInputStream in = new ObjectInputStream(socket.getInputStream())){
+
                     QuizPanel quizPanel = new QuizPanel(socket, out, in);
                     Object obj;
 
@@ -36,16 +36,20 @@ public class Client {
                                 quizPanel.showRoundScore(response);
                             } else if (response.getType() == Response.FINAL_SCORE) {
                                 quizPanel.showFinalScore(response);
+                            } else if (response.getType() == Response.PLAY_AGAIN) {
+                                quizPanel.closeConnection();
+                                quizPanel.closeMainPanel();
                                 break;
                             }
                         }
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    System.err.println("The connection was interrupted!");
                 } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
+                    System.err.println("Incorrect class cast.");
                 }
-            }
+            } while (replayable);
+            System.out.println("sist");
         }
 
     public static void main(String[] args) {

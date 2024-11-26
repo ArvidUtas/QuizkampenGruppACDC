@@ -10,6 +10,7 @@ public class Response implements Serializable {
     public final static int FINAL_SCORE = 3;
     public final static int MESSAGE = 4;
     public static final int ROUND_SCORE = 5;
+    public static final int PLAY_AGAIN = 6;
 
     private int type;
 
@@ -48,6 +49,11 @@ public class Response implements Serializable {
         this.currentRound = currentRound;
         this.p1RoundScore = p1RoundScore;
         this.p2RoundScore = p2RoundScore;
+    }
+
+    public Response(int type, String message) {
+        this.type = type;
+        this.message = message;
     }
 
     public int getCurrentRound() {

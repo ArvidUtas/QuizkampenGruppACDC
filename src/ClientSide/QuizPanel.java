@@ -4,6 +4,9 @@ import AccessFromBothSides.EnumCategories;
 import AccessFromBothSides.Response;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -34,14 +37,29 @@ public class QuizPanel {
         this.socket = socket;
         this.out = out;
         this.in = in;
-        MainFrame();
+        mainFrame();
     }
 
-    private void MainFrame() {
+    private void mainFrame() {
         frame = new JFrame("Quizkampen");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    if (!socket.isClosed()) {
+                        in.close();
+                        out.close();
+                        socket.close();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                System.exit(0);
+            }
+        });
         mainPanel = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) { // Anpassad bakgrundsbild
@@ -86,8 +104,9 @@ public class QuizPanel {
             JButton button = new JButton(enumCategories.getText(), buttonIcon);
             button.setBorderPainted(false); // Kanterna syns inte
             button.setContentAreaFilled(false); // Transparent
-            button.setHorizontalTextPosition(SwingConstants.CENTER); // Får plats i rutan
-            button.setVerticalTextPosition(SwingConstants.CENTER); // Får plats i rutan
+            button.setFocusPainted(false);
+            button.setHorizontalTextPosition(SwingConstants.CENTER);
+            button.setVerticalTextPosition(SwingConstants.CENTER);
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
             button.setFont(buttonFont);
             buttonPanel.add(button);
@@ -117,7 +136,7 @@ public class QuizPanel {
             answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
             answerButton.setVerticalTextPosition(SwingConstants.CENTER);
             answerButton.setFont(buttonFont);
-            answerButton.setFocusPainted(true);
+            answerButton.setFocusPainted(false);
 
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
@@ -130,7 +149,6 @@ public class QuizPanel {
                 }
             });
             answerPanel.add(answerButton);
-
         }
 
         mainPanel.add(answerPanel, BorderLayout.CENTER);
@@ -161,6 +179,7 @@ public class QuizPanel {
         label.setFont(new Font("Arial", Font.BOLD, 24));
         label.setForeground(Color.BLACK);
         JLabel waiting = new JLabel("Waiting for other player", JLabel.CENTER);
+        waiting.setFont(buttonFont);
         JButton contButton = new JButton(cont);
         contButton.addActionListener(e -> {
             sendStringToServer(cont);
@@ -184,6 +203,7 @@ public class QuizPanel {
     // Visa slutresultatet
     public void showFinalScore(Response response) {
         mainPanel.removeAll();
+        final String playAgain = "Again";
         JPanel centrePanel = new JPanel(new GridLayout(10, 1));
         mainPanel.add(centrePanel,BorderLayout.CENTER);
         JLabel finalScoreLabel1 = new JLabel(response.getMessage(), JLabel.CENTER);
@@ -205,8 +225,16 @@ public class QuizPanel {
         }
         JButton playAgainButton = new JButton("Play again");
         JButton exitButton = new JButton("Exit");
-        playAgainButton.addActionListener(e -> Client.replayable = true);
-        exitButton.addActionListener(e -> System.exit(0));
+        playAgainButton.addActionListener(e -> {
+                    Client.replayable = true;
+
+                    sendStringToServer(playAgain);
+
+                });
+        exitButton.addActionListener(e -> {
+            closeConnection();
+            System.exit(0);
+        });
         mainPanel.add(southPanel, BorderLayout.SOUTH);
         southPanel.setOpaque(false);
         southPanel.add(playAgainButton);
@@ -225,6 +253,9 @@ public class QuizPanel {
         }
     }
 
+    public void closeMainPanel(){
+        frame.dispose();
+    }
     // Stäng anslutningen
     public void closeConnection() {
         try {
