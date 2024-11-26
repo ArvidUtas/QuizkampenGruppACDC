@@ -17,7 +17,9 @@ public class QuizPanel {
     private JButton clickedButton;
     private final String backgroundImagePath = "src/ClientSide/graphics/gradient.png";
     private final String buttonImagePath = "src/ClientSide/graphics/button.png";
+    private final String buttonGreenImagePath = "src/ClientSide/graphics/buttonGreen.png";
     private ImageIcon buttonIcon = new ImageIcon(buttonImagePath);
+    private ImageIcon buttonGreenIcon = new ImageIcon(buttonGreenImagePath);
     private ImageIcon backgroundIcon = new ImageIcon(backgroundImagePath);
     private Image background = backgroundIcon.getImage();
     private Socket socket;
@@ -84,8 +86,8 @@ public class QuizPanel {
 
         for (EnumCategories enumCategories : listOfCategories) {
             JButton button = new JButton(enumCategories.getText(), buttonIcon);
-            //button.setPreferredSize(new Dimension(200, 50));
             button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
             button.setHorizontalTextPosition(SwingConstants.CENTER);
             button.setVerticalTextPosition(SwingConstants.CENTER);
             button.addActionListener(e -> sendStringToServer(enumCategories.getValue()));
@@ -116,15 +118,12 @@ public class QuizPanel {
 
         for (int i = 2; i < questionData.size(); i++) {
             JButton answerButton = new JButton(questionData.get(i), buttonIcon);
-            //answerButton.setPreferredSize(new Dimension(200, 50));
             answerButton.setBorderPainted(false);
+            answerButton.setContentAreaFilled(false);
             answerButton.setHorizontalTextPosition(SwingConstants.CENTER);
             answerButton.setVerticalTextPosition(SwingConstants.CENTER);
             answerButton.setFont(buttonFont);
             answerButton.setFocusPainted(true);
-
-            // Den fungerar inte för mig -->
-            answerButton.setOpaque(false);
 
             answerButton.addActionListener(e -> {
                 sendStringToServer(answerButton.getText()); // Skicka svaret till servern
@@ -150,7 +149,7 @@ public class QuizPanel {
         if (feedback.equals("Wrong!")) { //TODO: change to boolean
             clickedButton.setForeground(Color.red);
         } else
-            clickedButton.setForeground(Color.GREEN);
+            clickedButton.setIcon(buttonGreenIcon);
         try {
             sleep(700);
         } catch (InterruptedException e) {
@@ -161,6 +160,7 @@ public class QuizPanel {
     // Visa slutresultatet
     public void showFinalScore(Response response) {
         mainPanel.removeAll();
+        JPanel southPanel = new JPanel(new GridLayout(1,2));
 
         JLabel finalScoreLabel = new JLabel("<html>" + response.getMessage() + "<br>Player 1: "
                 + response.getPlayer1score() + " - Player 2: "
@@ -169,8 +169,13 @@ public class QuizPanel {
         mainPanel.add(finalScoreLabel, BorderLayout.CENTER);
 
         JButton playAgainButton = new JButton("Play again");
-        playAgainButton.addActionListener(e -> showCategorySelection());
-        mainPanel.add(playAgainButton, BorderLayout.SOUTH);
+        JButton exitButton = new JButton("Exit");
+        playAgainButton.addActionListener(e -> Client.replayable = true);
+        exitButton.addActionListener(e -> System.exit(0));
+        mainPanel.add(southPanel, BorderLayout.SOUTH);
+        southPanel.setOpaque(false);
+        southPanel.add(playAgainButton);
+        southPanel.add(exitButton);
 
         mainPanel.revalidate();
         mainPanel.repaint();
