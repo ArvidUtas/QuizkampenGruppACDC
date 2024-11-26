@@ -77,7 +77,7 @@ public class QuizPanel {
         mainPanel.add(label, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setLayout(new GridLayout(3,2));
         buttonPanel.setOpaque(false);
 
         ArrayList<EnumCategories> listOfCategories = new ArrayList<>();
@@ -158,6 +158,7 @@ public class QuizPanel {
         final String cont = "Continue";
         mainPanel.removeAll();
         JPanel centrePanel = new JPanel(new GridLayout(10, 1));
+        centrePanel.setOpaque(false);
         mainPanel.add(centrePanel,BorderLayout.CENTER);
         JLabel label = new JLabel("Round " + response.getCurrentRound() + " score", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
@@ -171,7 +172,6 @@ public class QuizPanel {
                 waiting.setText("Waiting for other player");
                 isFirstPlayer[0] = false;
             }
-
         });
         roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
                 + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
@@ -181,7 +181,7 @@ public class QuizPanel {
         }
         mainPanel.add(label, BorderLayout.NORTH);
         mainPanel.add(contButton, BorderLayout.SOUTH);
-        mainPanel.add(waiting, BorderLayout.CENTER);
+        //mainPanel.add(waiting, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
