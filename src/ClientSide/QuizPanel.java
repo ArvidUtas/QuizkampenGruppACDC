@@ -48,13 +48,11 @@ public class QuizPanel {
             }
         };
 
-
         // Scroll
         scrollPane = new JScrollPane(mainPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // frame.add(mainPanel);
         frame.setVisible(true);
     }
 
@@ -111,8 +109,6 @@ public class QuizPanel {
         JPanel answerPanel = new JPanel();
         answerPanel.setLayout(new GridLayout(2,2));
         answerPanel.setOpaque(false);
-
-        //Nytt
 
         Font buttonFont = new Font("Arial", Font.PLAIN, 16);
 
@@ -189,26 +185,6 @@ public class QuizPanel {
             e.printStackTrace();
         }
     }
-
-//    // Skicka data till servern
-//    public void sendToServer(Response response) {
-//        try {
-//            out.writeObject(response);
-//            out.flush();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    // Hämta data från servern
-//    public Response receiveFromServer() {
-//        try {
-//            return (Response) in.readObject();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 //
 //    // Stäng anslutningen
 //    public void closeConnection() {

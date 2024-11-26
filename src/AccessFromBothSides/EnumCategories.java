@@ -5,6 +5,7 @@ public enum EnumCategories {
     GEOGRAPHY (22, "Geography"),
     POLITICS (24, "Politics"),
     SPORTS (21, "Sports"),
+    MYTHOLOGY (20, "Mythology"),
     VEHICLES (28, "Vehicles");
 
     private final int value;
