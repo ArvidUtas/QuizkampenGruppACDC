@@ -199,6 +199,7 @@ public class QuizPanel {
         finalScoreLabel2.setFont(new Font("Arial", Font.BOLD, 16));
         centrePanel.add(finalScoreLabel1);
         centrePanel.add(finalScoreLabel2);
+        centrePanel.setOpaque(false);
         JPanel southPanel = new JPanel(new GridLayout(1,2));
 
         roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
