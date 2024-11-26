@@ -163,7 +163,8 @@ public class Protocol {
                 String playagain2 = player2.receieveFromClient();
 
                 if (playagain1.equals("PLAY_AGAIN") && playagain2.equals("PLAY_AGAIN")) {
-
+                    currentRound=1;
+                    currentQ=1;
                     state = CATEGORY;
                 } else {
                 }

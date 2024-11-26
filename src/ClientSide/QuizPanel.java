@@ -170,7 +170,10 @@ public class QuizPanel {
         }
 
         JButton playAgainButton = new JButton("Play again");
-        playAgainButton.addActionListener(e -> sendStringToServer("PLAY_AGAIN"));
+        playAgainButton.addActionListener(e -> {
+            roundScoreList.clear();
+            sendStringToServer("PLAY_AGAIN");
+        });
 
 
         JButton quitButton = new JButton("Quit");
