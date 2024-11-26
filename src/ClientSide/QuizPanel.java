@@ -132,9 +132,16 @@ public class QuizPanel {
         JLabel label = new JLabel("Round " + response.getCurrentRound() + " score", JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 24));
         label.setForeground(Color.BLACK);
+        JLabel waiting = new JLabel("");
         JButton contButton = new JButton(cont);
         contButton.addActionListener(e -> {
+            boolean[] isFirstPlayer = {true};
             sendStringToServer(cont);
+            if(isFirstPlayer[0]) {
+                waiting.setText("Waiting for other player");
+                isFirstPlayer[0] = false;
+            }
+
         });
         roundScoreList.add("Player 1: " + response.getP1RoundScore() + "\t\t\t\t\t\t" + response.getCurrentRound()
                 + "\t\t\t\t\t\tPlayer 2: " + response.getP2RoundScore());
@@ -144,6 +151,7 @@ public class QuizPanel {
         }
         mainPanel.add(label, BorderLayout.NORTH);
         mainPanel.add(contButton, BorderLayout.SOUTH);
+        mainPanel.add(waiting, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
     }
