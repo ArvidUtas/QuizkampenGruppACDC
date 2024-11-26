@@ -36,7 +36,7 @@ public class Protocol {
 
         while (true) {
             if (state == CATEGORY) {
-                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE, currentRound, currentQ, p1Score, p2Score,null,"Wait for other player to choose category"));
+                currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE, currentRound, currentQ, p1Score, p2Score, null, "Wait for other player to choose category"));
                 currentPlayer.sendToClient(new Response(Response.CATEGORY, currentRound, currentQ, p1Score, p2Score,
                         null, "Choose your category"));
                 String chosenCategory = currentPlayer.receieveFromClient();
@@ -45,14 +45,12 @@ public class Protocol {
                     throw new IllegalStateException("No questions found");
                 }
                 state = QUESTION;
-            }
-            else if (state == QUESTION) {
+            } else if (state == QUESTION) {
                 Response qNAs = new Response(Response.QUESTION, currentRound, currentQ,
                         p1Score, p2Score, questions.get(currentQ - 1), null);
                 sendToBothClients(qNAs);
                 state = ANSWER;
-            }
-            else if (state == ANSWER) {
+            } else if (state == ANSWER) {
 
                 /** Skapar trådar för spelarna.
                  * Nu kan t ex player2 skicka in sitt svarsalternativ och få svar på om det var rätt/fel samt få sin poäng
@@ -118,8 +116,7 @@ public class Protocol {
                     p1Score += p1RoundScore;
                     p2Score += p2RoundScore;
                 }
-            }
-            else if (state == ROUND_SCORE) {
+            } else if (state == ROUND_SCORE) {
                 Response roundScoreUpdate = new Response(Response.ROUND_SCORE, currentRound,
                         p1RoundScore, p2RoundScore);
                 sendToBothClients(roundScoreUpdate);
@@ -139,13 +136,12 @@ public class Protocol {
                     currentQ = 1;
                     currentPlayer = currentPlayer.getOpponent();
                 }
-            }
-            else if (state == FINAL_SCORE) {
+            } else if (state == FINAL_SCORE) {
                 if (p1Score > p2Score) {
                     player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound,
                             p1Score, p2Score, p1RoundScore, p2RoundScore, "Victory!"));
                     player2.sendToClient(new Response(Response.FINAL_SCORE, currentRound,
-                            p1Score, p2Score, p1RoundScore, p2RoundScore,  "Defeat."));
+                            p1Score, p2Score, p1RoundScore, p2RoundScore, "Defeat."));
                 } else if (p1Score < p2Score) {
                     player1.sendToClient(new Response(Response.FINAL_SCORE, currentRound,
                             p1Score, p2Score, p1RoundScore, p2RoundScore, "Defeat."));
@@ -155,7 +151,22 @@ public class Protocol {
                     sendToBothClients(new Response(Response.FINAL_SCORE, currentRound,
                             p1Score, p2Score, p1RoundScore, p2RoundScore, "Draw."));
                 }
-                break;
+                currentPlayer = player1;
+                state = PLAY_AGAIN;
+
+            }
+            if (state == PLAY_AGAIN) {
+                Response againResponse = new Response(Response.GAME_RESET, "SPELET STARTAS OM");
+                sendToBothClients(againResponse);
+
+                String playagain1 = player1.receieveFromClient();
+                String playagain2 = player2.receieveFromClient();
+
+                if (playagain1.equals("PLAY_AGAIN") && playagain2.equals("PLAY_AGAIN")) {
+
+                    state = CATEGORY;
+                } else {
+                }
             }
         }
     }

@@ -170,11 +170,31 @@ public class QuizPanel {
         }
 
         JButton playAgainButton = new JButton("Play again");
-        playAgainButton.addActionListener(e -> showCategorySelection());
+        playAgainButton.addActionListener(e -> sendStringToServer("PLAY_AGAIN"));
+
+
+        JButton quitButton = new JButton("Quit");
+        quitButton.addActionListener(e -> {
+            sendStringToServer("EXIT GAME");
+        });
+//        } {
+//            sendStringToServer("PLAY_AGAIN");
+//            resetGame();
+//            showCategorySelection();
+//        });
+
         mainPanel.add(playAgainButton, BorderLayout.SOUTH);
+        mainPanel.add(quitButton, BorderLayout.EAST);
 
         mainPanel.revalidate();
         mainPanel.repaint();
+    }
+
+    public  void resetGame(){
+        roundScoreList.clear();
+
+
+
     }
 
     public void sendStringToServer(String message) {
