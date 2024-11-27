@@ -19,16 +19,18 @@ public class QuizPanel {
     private JPanel mainPanel;
     private JButton clickedButton;
     private final String backgroundImagePath = "src/ClientSide/graphics/gradient.png";
-    private final String buttonImagePath = "src/ClientSide/graphics/button.png";
-    private final String buttonGreenImagePath = "src/ClientSide/graphics/buttonGreen.png";
+    private final String buttonImagePath = "src/ClientSide/graphics/NewBlue.png";
+    private final String buttonGreenImagePath = "src/ClientSide/graphics/NewGreen.png";
+    private final String buttonRedImagePath = "src/ClientSide/graphics/NewRed.png";
     private ImageIcon buttonIcon = new ImageIcon(buttonImagePath);
     private ImageIcon buttonGreenIcon = new ImageIcon(buttonGreenImagePath);
+    private ImageIcon buttonRedIcon = new ImageIcon(buttonRedImagePath);
     private ImageIcon backgroundIcon = new ImageIcon(backgroundImagePath);
     private Image background = backgroundIcon.getImage();
     private ArrayList<String> roundScoreList = new ArrayList<>();
     private Font buttonFont = new Font("Arial", Font.PLAIN, 16);
     private Font headerFont = new Font("Montserrat", Font.PLAIN, 24);
-        private Socket socket;
+    private Socket socket;
     private ObjectInputStream in;
     private PrintWriter out;
     private JScrollPane scrollPane;
@@ -151,7 +153,7 @@ public class QuizPanel {
     // Visa feedback på svaret
     public void showFeedback(Response feedback) {
         if (!feedback.isCorrectAnswer()) {
-            clickedButton.setForeground(Color.red);
+            clickedButton.setIcon(buttonRedIcon);
         } else
             clickedButton.setIcon(buttonGreenIcon);
         try {
