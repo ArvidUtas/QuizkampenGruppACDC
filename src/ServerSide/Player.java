@@ -25,7 +25,7 @@ public class Player {
 
     public void sendToClient(Response response){
         try {
-            if (!socket.isClosed() && socket.isConnected()) {
+            if (socket != null && !socket.isClosed() && socket.isConnected()) {
                 System.out.println("Sending response to client: " + response);
                 out.writeObject(response);
                 out.flush();
@@ -55,9 +55,9 @@ public class Player {
     public String receieveFromClient(){
         String input = "";
         try {
-            if (!socket.isClosed() && socket.isConnected()) {
+            if (socket != null && !socket.isClosed() && socket.isConnected()) {
                 input = in.readLine();
-                if (input.equals("DISCONNECT")) {
+                if (input != null && input.equals("DISCONNECT")) {
                     System.out.println("Client has disconnected.");
                     closeConnection();
                 }

@@ -26,7 +26,14 @@ public class Game extends Thread {
     }
 
     public void run() {
-        Protocol protocol = new Protocol(numQuestion, numRounds, player1, player2);
+        try {
+            Protocol protocol = new Protocol(numQuestion, numRounds, player1, player2);
+        } catch (Exception e) {
+            System.out.println("Exception in run method.");
+        } finally {
+            player1.closeConnection();
+            player2.closeConnection();
+        }
     }
 }
 

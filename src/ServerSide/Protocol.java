@@ -34,7 +34,7 @@ public class Protocol {
         this.player2 = player2;
         currentPlayer = player1;
 
-        while (true) {
+        while (!(state == EXIT)) {
             if (state == CATEGORY) {
                 currentPlayer.getOpponent().sendToClient(new Response(Response.MESSAGE,
                         "Please wait for Player " + currentPlayer.getPlayerNum() + " to choose category."));
@@ -56,10 +56,7 @@ public class Protocol {
                 state = ANSWER;
             }
             else if (state == ANSWER) {
-                /** Skapar trådar för spelarna.
-                 * Nu kan t ex player2 skicka in sitt svarsalternativ och få svar på om det var rätt/fel samt få sin poäng
-                 * uppdaterat. Innan gick det inte att göra eftersom programmet stod och väntade på player1.
-                 */
+                // Skapar trådar för spelarna så de kan skicka svarsalternativ & få feedback utan att vänta på motståndaren
                 Thread player1Thread = new Thread(() -> {
                     try {
                         String player1Answer = player1.receieveFromClient();
@@ -167,11 +164,16 @@ public class Protocol {
                             if (player1Answer.equals("Again")){
                                 Response playAgain = new Response(Response.PLAY_AGAIN, null);
                                 player1.sendToClient(playAgain);
-                            } else
+                                System.out.println("p1 play again");
+                            } else {
                                 state = EXIT;
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        synchronized (this) {
+                            state = EXIT;
+                        }
                     }
                 });
 
@@ -182,27 +184,27 @@ public class Protocol {
                             if (player2Answer.equals("Again")) {
                                 Response playAgain = new Response(Response.PLAY_AGAIN, null);
                                 player2.sendToClient(playAgain);
-                            } else
+                                System.out.println("p2 play again");
+                            } else {
                                 state = EXIT;
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        synchronized (this) {
+                            state = EXIT;
+                        }
                     }
                 });
-                if (state == EXIT)
-                    break;
 
                 player1Thread.start();
                 player2Thread.start();
-
                 try {
                     player1Thread.join();
                     player2Thread.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else if (state == EXIT) {
-                break;
             }
         }
         player1.closeConnection();

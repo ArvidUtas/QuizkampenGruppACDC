@@ -41,13 +41,12 @@ public class Client {
                         }
                     }
                 } catch (IOException e) {
-                    System.err.println("The connection was interrupted!");
+                    System.out.println("The connection was interrupted!");
                 } catch (ClassNotFoundException e) {
-                    System.err.println("Incorrect class cast.");
+                    System.out.println("Incorrect class cast.");
                 }
             } while (replayable);
         }
-
 
     public static void main(String[] args) {
         Client client = new Client();
