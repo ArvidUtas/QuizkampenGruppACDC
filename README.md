@@ -1,7 +1,7 @@
 
 # Quizkampen – Java Group Project
 
-This repository contains a Java-based quiz game developed as a group project for the *Object-Oriented Programming and Java* course. The game is inspired by the popular mobile game **Quizkampen**, tailored for desktop use with a focus on simplicity and accessibility.
+This repository contains a Java-based quiz game developed as a group project for the *Object-Oriented Programming and Java* course. The game is inspired by the popular mobile game **Quizkampen**, tailored for desktop use with a focus on simplicity and accessibility. This assignment also focused on working as a team in a manner that practise agile methodology with sprints, daily stand-ups, retrospectives, backlogs etc.
 
 ## Project Overview
 
